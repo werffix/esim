@@ -19,9 +19,8 @@
   .tab-btn.active{color:#fff;background:rgba(255,255,255,0.08)}
   .tab-icon{display:block;margin:0 auto 2px;width:22px;height:22px}
   .tab-icon svg{width:22px;height:22px;fill:currentColor}
-  .page{display:none;flex-direction:column;height:100dvh;position:absolute;inset:0;z-index:1;background:#0a0a0a}
-  .page.active{display:flex;z-index:2}
-  .page-main{z-index:1}
+  .page{display:none;flex-direction:column;height:100dvh;background:#0a0a0a}
+  .page.active{display:flex}
   .page-header{display:flex;align-items:center;padding:12px 16px;gap:12px;min-height:48px;border-bottom:1px solid rgba(255,255,255,0.05)}
   .page-back{width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:50%;transition:background .2s;flex-shrink:0;border:none;background:transparent;color:#fff}
   .page-back:active{background:rgba(255,255,255,0.08)}
@@ -77,61 +76,63 @@
 <body>
 
 <!-- ===== MAIN PAGE ===== -->
-<div class="page page-main active" id="pageMain">
-  <div style="flex:1;display:flex;flex-direction:column">
-    <div class="scroll-area" id="tabContent">
-      <div id="esimTab">
-        <div class="search-wrap" style="margin-bottom:12px">
-          <svg class="search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-          <input class="search-input" id="searchInput" placeholder="Поиск страны..." oninput="filterCountries(this.value)">
-        </div>
-        <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:12px;-webkit-overflow-scrolling:touch" id="filterRow">
-          <button class="filter-btn active" data-filter="all" onclick="setFilter('all',this)">Все</button>
-          <button class="filter-btn" data-filter="europe" onclick="setFilter('europe',this)">Европа</button>
-          <button class="filter-btn" data-filter="asia" onclick="setFilter('asia',this)">Азия</button>
-          <button class="filter-btn" data-filter="americas" onclick="setFilter('americas',this)">Америка</button>
-          <button class="filter-btn" data-filter="africa" onclick="setFilter('africa',this)">Африка</button>
-          <button class="filter-btn" data-filter="oceania" onclick="setFilter('oceania',this)">Океания</button>
-        </div>
-        <div id="countryList"></div>
+<div class="page active" id="pageMain" style="display:flex">
+  <div class="page-header" style="border-bottom-color:rgba(255,255,255,0.06)">
+    <div style="font-size:18px;font-weight:700;letter-spacing:-0.3px">q1 eSIM</div>
+    <div style="flex:1"></div>
+    <div style="font-size:11px;color:rgba(255,255,255,0.3);font-weight:500">v1.0</div>
+  </div>
+  <div class="scroll-area" style="flex:1;overflow-y:auto;padding:12px 16px;-webkit-overflow-scrolling:touch" id="tabContent">
+    <div id="esimTab">
+      <div class="search-wrap" style="margin-bottom:12px">
+        <svg class="search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <input class="search-input" id="searchInput" placeholder="Поиск страны..." oninput="filterCountries(this.value)">
       </div>
+      <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:12px;-webkit-overflow-scrolling:touch" id="filterRow">
+        <button class="filter-btn active" data-filter="all" onclick="setFilter('all',this)">Все</button>
+        <button class="filter-btn" data-filter="europe" onclick="setFilter('europe',this)">Европа</button>
+        <button class="filter-btn" data-filter="asia" onclick="setFilter('asia',this)">Азия</button>
+        <button class="filter-btn" data-filter="americas" onclick="setFilter('americas',this)">Америка</button>
+        <button class="filter-btn" data-filter="africa" onclick="setFilter('africa',this)">Африка</button>
+        <button class="filter-btn" data-filter="oceania" onclick="setFilter('oceania',this)">Океания</button>
+      </div>
+      <div id="countryList"></div>
+    </div>
 
-      <div id="profileTab" style="display:none">
-        <div class="glass-strong" style="padding:24px;text-align:center;margin-bottom:16px">
-          <div style="width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,0.1);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:28px;color:#fff;font-weight:600" id="avatar">?</div>
-          <div style="font-size:18px;font-weight:600" id="userName">Гость</div>
-          <div style="font-size:13px;color:rgba(255,255,255,0.4);margin-top:4px"><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:6px;height:6px;border-radius:50%;background:#888;display:inline-block"></span> Онлайн</span></div>
+    <div id="profileTab" style="display:none">
+      <div class="glass-strong" style="padding:24px;text-align:center;margin-bottom:16px">
+        <div style="width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,0.1);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:28px;color:#fff;font-weight:600" id="avatar">?</div>
+        <div style="font-size:18px;font-weight:600" id="userName">Гость</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.4);margin-top:4px"><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:6px;height:6px;border-radius:50%;background:#888;display:inline-block"></span> Онлайн</span></div>
+      </div>
+      <div class="glass" style="padding:4px 16px;margin-bottom:16px">
+        <div class="menu-item" onclick="showPage('esims')">
+          <svg class="menu-icon" viewBox="0 0 24 24"><path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h16v2H4v-2z"/></svg>
+          <div style="flex:1"><div style="font-size:15px;font-weight:500">Мои eSIM</div><div style="font-size:12px;color:rgba(255,255,255,0.35)" id="esimCount">Загрузка...</div></div>
+          <span class="menu-arrow">›</span>
         </div>
-        <div class="glass" style="padding:4px 16px;margin-bottom:16px">
-          <div class="menu-item" onclick="showPage('esims')">
-            <svg class="menu-icon" viewBox="0 0 24 24"><path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h16v2H4v-2z"/></svg>
-            <div style="flex:1"><div style="font-size:15px;font-weight:500">Мои eSIM</div><div style="font-size:12px;color:rgba(255,255,255,0.35)" id="esimCount">Загрузка...</div></div>
-            <span class="menu-arrow">›</span>
-          </div>
-          <div class="menu-item" onclick="showPage('referral')">
-            <svg class="menu-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2a7.2 7.2 0 01-6-3.22c.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08a7.2 7.2 0 01-6 3.22z"/></svg>
-            <div style="flex:1"><div style="font-size:15px;font-weight:500">Реферальная программа</div><div style="font-size:12px;color:rgba(255,255,255,0.35)"><span id="referralBalance">$0.00</span></div></div>
-            <span class="menu-arrow">›</span>
-          </div>
-          <div class="menu-item" onclick="support()">
-            <svg class="menu-icon" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z"/></svg>
-            <div style="flex:1"><div style="font-size:15px;font-weight:500">Поддержка</div><div style="font-size:12px;color:rgba(255,255,255,0.35)">@q1esim_support</div></div>
-            <span class="menu-arrow">›</span>
-          </div>
+        <div class="menu-item" onclick="showPage('referral')">
+          <svg class="menu-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2a7.2 7.2 0 01-6-3.22c.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08a7.2 7.2 0 01-6 3.22z"/></svg>
+          <div style="flex:1"><div style="font-size:15px;font-weight:500">Реферальная программа</div><div style="font-size:12px;color:rgba(255,255,255,0.35)"><span id="referralBalance">$0.00</span></div></div>
+          <span class="menu-arrow">›</span>
+        </div>
+        <div class="menu-item" onclick="support()">
+          <svg class="menu-icon" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z"/></svg>
+          <div style="flex:1"><div style="font-size:15px;font-weight:500">Поддержка</div><div style="font-size:12px;color:rgba(255,255,255,0.35)">@q1esim_support</div></div>
+          <span class="menu-arrow">›</span>
         </div>
       </div>
     </div>
-
-    <div class="tab-bar" id="tabBar">
-      <button class="tab-btn active" id="tabEsim" onclick="switchTab('esim')">
-        <span class="tab-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg></span>
-        eSIM
-      </button>
-      <button class="tab-btn" id="tabProfile" onclick="switchTab('profile')">
-        <span class="tab-icon"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></span>
-        Профиль
-      </button>
-    </div>
+  </div>
+  <div class="tab-bar" id="tabBar">
+    <button class="tab-btn active" id="tabEsim" onclick="switchTab('esim')">
+      <span class="tab-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg></span>
+      eSIM
+    </button>
+    <button class="tab-btn" id="tabProfile" onclick="switchTab('profile')">
+      <span class="tab-icon"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></span>
+      Профиль
+    </button>
   </div>
 </div>
 
@@ -189,8 +190,8 @@ let userInfo = null;
 let currentFilter = 'all';
 
 const COUNTRY_CONTINENT = {
-  europe: ['GB','DE','FR','IT','ES','PT','NL','BE','CH','AT','SE','NO','DK','FI','PL','CZ','SK','HU','RO','BG','GR','HR','RS','SI','IE','LT','LV','EE','LU','MT','CY','IS','BA','AL','MK','ME','UA','BY','MD','FO','GI','AD','LI','MC','SM','VA'],
-  asia: ['JP','KR','CN','IN','TH','SG','MY','ID','PH','VN','AE','SA','IL','TR','RU','KZ','UZ','KG','TJ','TM','AZ','AM','GE','IR','IQ','JO','LB','KW','BH','QA','OM','YE','AF','PK','BD','LK','NP','BT','MM','LA','KH','BN','MN','MV','TL','PS','SY'],
+  europe: ['GB','DE','FR','IT','ES','PT','NL','BE','CH','AT','SE','NO','DK','FI','PL','CZ','SK','HU','RO','BG','GR','HR','RS','SI','IE','LT','LV','EE','LU','MT','CY','IS','BA','AL','MK','ME','UA','BY','MD','FO','GI','AD','LI','MC','SM','VA','RU'],
+  asia: ['JP','KR','CN','IN','TH','SG','MY','ID','PH','VN','AE','SA','IL','TR','KZ','UZ','KG','TJ','TM','AZ','AM','GE','IR','IQ','JO','LB','KW','BH','QA','OM','YE','AF','PK','BD','LK','NP','BT','MM','LA','KH','BN','MN','MV','TL','PS','SY'],
   americas: ['US','CA','MX','BR','AR','CL','CO','PE','EC','VE','UY','PY','BO','CR','PA','GT','SV','HN','NI','DO','CU','JM','TT','BS','BB','BZ','GY','SR'],
   africa: ['ZA','EG','NG','KE','MA','TN','DZ','LY','GH','CI','SN','CM','UG','TZ','ET','AO','MZ','ZM','ZW','NA','BW','MU','MG','RE','MR','ML','BF','NE','TD','SO','SD','RW','BJ','CG','CD'],
   oceania: ['AU','NZ','FJ','PG','SB','VU','WS','TO','CK','PF','NC','GU'],
@@ -385,7 +386,8 @@ function showEsimDetail(iccid) {
     ${qrHtml ? `<div class="glass" style="padding:16px;margin-bottom:16px"><div style="font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:8px">QR-код для активации</div>${qrHtml}</div>` : ''}
     <button onclick="showPage('esims')" style="width:100%;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#fff;font-size:14px;cursor:pointer;margin-bottom:16px">← Назад к списку</button>
   `;
-  showPage('esimdetail');
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('pageEsimDetail').classList.add('active');
 }
 
 function renderReferral() {
