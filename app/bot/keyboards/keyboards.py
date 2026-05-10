@@ -11,7 +11,7 @@ from app.models.models import Country, Esim, Plan
 def main_menu_kb(lang: str = "en", is_admin: bool = False) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     builder.row(InlineKeyboardButton(
-        text="🛍️ " + t("menu_open_app", lang),
+        text=t("menu_open_app", lang),
         web_app=WebAppInfo(url="https://app.q1esim.site/tma"),
     ))
     builder.row(InlineKeyboardButton(text=t("menu_buy", lang), callback_data="menu:buy"))

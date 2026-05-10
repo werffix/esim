@@ -53,19 +53,20 @@ def _read_logo() -> BufferedInputFile:
 async def cmd_start(message: Message, user: User, lang: str, state: FSMContext) -> None:
     await state.clear()
     is_admin = user.telegram_id in settings.ADMIN_IDS
+    reply_kb = ReplyKeyboardMarkup(
+        keyboard=[[KeyboardButton(text="📋 " + t("menu_main", lang))]],
+        resize_keyboard=True,
+        is_persistent=True,
+    )
     await message.answer_photo(
         _read_logo(),
         caption=t("welcome", lang),
         parse_mode="HTML",
-        reply_markup=main_menu_kb(lang, is_admin=is_admin),
+        reply_markup=reply_kb,
     )
     await message.answer(
         t("choose_action", lang),
-        reply_markup=ReplyKeyboardMarkup(
-            keyboard=[[KeyboardButton(text="📋 " + t("menu_main", lang))]],
-            resize_keyboard=True,
-            is_persistent=True,
-        ),
+        reply_markup=main_menu_kb(lang, is_admin=is_admin),
     )
 
 
@@ -73,11 +74,11 @@ async def cmd_start(message: Message, user: User, lang: str, state: FSMContext) 
 async def cb_menu_start(cb: CallbackQuery, user: User, lang: str, state: FSMContext) -> None:
     await state.clear()
     is_admin = user.telegram_id in settings.ADMIN_IDS
-    kb = main_menu_kb(lang, is_admin=is_admin)
-    if cb.message.photo:
-        await cb.message.edit_caption(caption=t("welcome", lang), parse_mode="HTML", reply_markup=kb)
-    else:
-        await cb.message.edit_text(t("welcome", lang), parse_mode="HTML", reply_markup=kb)
+    await cb.message.edit_text(
+        t("choose_action", lang),
+        parse_mode="HTML",
+        reply_markup=main_menu_kb(lang, is_admin=is_admin),
+    )
     await cb.answer()
 
 
@@ -87,7 +88,7 @@ async def cmd_shop(message: Message, user: User, lang: str) -> None:
     from aiogram.utils.keyboard import InlineKeyboardBuilder
     builder = InlineKeyboardBuilder()
     builder.row(InlineKeyboardButton(
-        text="🛍️ " + t("menu_open_app", lang),
+        text=t("menu_open_app", lang),
         web_app=WebAppInfo(url="https://app.q1esim.site/tma"),
     ))
     await message.answer(t("welcome", lang), parse_mode="HTML", reply_markup=builder.as_markup())
@@ -97,10 +98,8 @@ async def cmd_shop(message: Message, user: User, lang: str) -> None:
 async def msg_main_menu(message: Message, user: User, lang: str, state: FSMContext) -> None:
     await state.clear()
     is_admin = user.telegram_id in settings.ADMIN_IDS
-    await message.answer_photo(
-        _read_logo(),
-        caption=t("welcome", lang),
-        parse_mode="HTML",
+    await message.answer(
+        t("choose_action", lang),
         reply_markup=main_menu_kb(lang, is_admin=is_admin),
     )
 

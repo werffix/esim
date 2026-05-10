@@ -260,7 +260,7 @@ async def tma_buy(body: dict):
             raise HTTPException(404, "Тариф не найден")
 
         order_service = OrderService(session)
-        order = await order_service.create_order(user.id, plan)
+        order = await order_service.create_order(user.id, plan.id)
 
         nova = await get_nova_client()
         esim_service = EsimService(session, nova)
