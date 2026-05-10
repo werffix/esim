@@ -178,6 +178,7 @@ async def tma_init(body: dict, request: Request):
                 "code": c.code,
                 "name": _country_name(c, lang),
                 "flag": c.flag_emoji or "",
+                "description": c.description or "",
             }
             for c in all_countries
         ]

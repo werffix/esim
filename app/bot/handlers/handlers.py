@@ -51,7 +51,7 @@ async def _edit_message(cb: CallbackQuery, text: str, **kwargs) -> None:
     if cb.message.photo:
         await cb.message.edit_caption(caption=text, **kwargs)
     else:
-        await _edit_message(cb, text, **kwargs)
+        await cb.message.edit_text(text, **kwargs)
 
 
 # ─── /start ───────────────────────────────────────────────────────────────────
@@ -67,7 +67,7 @@ async def cmd_start(message: Message, user: User, lang: str, state: FSMContext) 
         reply_markup=main_menu_kb(lang, is_admin=is_admin),
     )
     await message.answer(
-        "·",
+        t("choose_action", lang),
         reply_markup=ReplyKeyboardMarkup(
             keyboard=[[KeyboardButton(text="📋 " + t("menu_main", lang))]],
             resize_keyboard=True,
@@ -105,8 +105,10 @@ async def cmd_shop(message: Message, user: User, lang: str) -> None:
 async def msg_main_menu(message: Message, user: User, lang: str, state: FSMContext) -> None:
     await state.clear()
     is_admin = user.telegram_id in settings.ADMIN_IDS
-    await message.answer(
-        t("choose_action", lang),
+    await message.answer_photo(
+        _read_logo(),
+        caption=t("welcome", lang),
+        parse_mode="HTML",
         reply_markup=main_menu_kb(lang, is_admin=is_admin),
     )
 

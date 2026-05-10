@@ -15,6 +15,7 @@ from fastapi.responses import JSONResponse
 from app.admin.handlers import router as admin_router
 from app.api.routers.webhook import router as webhook_router
 from app.api.routers.tma_router import router as tma_router
+from app.api.routers.admin_router import router as admin_api_router
 from app.bot.handlers.handlers import router as main_router
 from app.bot.middlewares.middlewares import (
     AntiFloodMiddleware,
@@ -134,6 +135,7 @@ def create_app() -> FastAPI:
     # Include routers
     app.include_router(webhook_router)
     app.include_router(tma_router)
+    app.include_router(admin_api_router)
 
     @app.get("/health")
     async def health() -> dict:

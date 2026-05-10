@@ -58,6 +58,8 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
 async def create_tables() -> None:
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+        from sqlalchemy import text as sa_text
+        await conn.execute(sa_text("ALTER TABLE countries ADD COLUMN IF NOT EXISTS description TEXT"))
     logger.info("Database tables created")
 
 

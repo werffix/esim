@@ -96,6 +96,7 @@ class Country(TimestampMixin, Base):
     flag_emoji: Mapped[Optional[str]] = mapped_column(String(10), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     sort_order: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
     plans: Mapped[list["Plan"]] = relationship("Plan", back_populates="country")
 
