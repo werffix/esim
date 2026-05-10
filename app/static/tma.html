@@ -5,82 +5,83 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <title>Q1 eSIM</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script src="https://cdn.tailwindcss.com"></script>
 <style>
-  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:#0a0a0a;color:#fff;overscroll-behavior:none;overflow:hidden;height:100dvh}
-  ::-webkit-scrollbar{width:0;height:0}
-  .safe-top{padding-top:env(safe-area-inset-top,12px)}
-  .safe-bottom{padding-bottom:env(safe-area-inset-bottom,8px)}
-  .glass{background:rgba(255,255,255,0.04);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.06);border-radius:16px}
-  .glass-strong{background:rgba(255,255,255,0.06);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.08);border-radius:20px}
-  .tab-bar{display:flex;background:rgba(255,255,255,0.04);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-top:1px solid rgba(255,255,255,0.06);border-radius:20px 20px 0 0;padding:6px 8px;padding-bottom:calc(6px + env(safe-area-inset-bottom))}
-  .tab-btn{flex:1;padding:8px 0;text-align:center;font-size:11px;font-weight:500;color:rgba(255,255,255,0.35);transition:all .2s;position:relative;cursor:pointer;border:none;background:transparent;border-radius:12px}
-  .tab-btn.active{color:#fff;background:rgba(255,255,255,0.08)}
-  .tab-icon{display:block;margin:0 auto 2px;width:22px;height:22px}
-  .tab-icon svg{width:22px;height:22px;fill:currentColor}
-  .page{display:none;flex-direction:column;height:100dvh;background:#0a0a0a}
-  .page.active{display:flex}
-  .page-header{display:flex;align-items:center;padding:12px 16px;gap:12px;min-height:48px;border-bottom:1px solid rgba(255,255,255,0.05)}
-  .page-back{width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:50%;transition:background .2s;flex-shrink:0;border:none;background:transparent;color:#fff}
-  .page-back:active{background:rgba(255,255,255,0.08)}
-  .page-back svg{width:20px;height:20px;fill:currentColor}
-  .page-title{font-size:16px;font-weight:600;flex:1}
-  .scroll-area{flex:1;overflow-y:auto;padding:16px;-webkit-overflow-scrolling:touch}
-  .country-card{background:rgba(255,255,255,0.04);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:12px;text-align:center;cursor:pointer;transition:all .15s}
-  .country-card:active{transform:scale(0.96);background:rgba(255,255,255,0.08)}
-  .country-flag{font-size:28px;display:block;margin-bottom:2px}
-  .country-name{font-size:12px;color:rgba(255,255,255,0.7)}
-  .plan-card{background:rgba(255,255,255,0.04);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:14px 16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:all .15s}
-  .plan-card:active{transform:scale(0.98);background:rgba(255,255,255,0.08)}
-  .plan-data{font-size:15px;font-weight:600}
-  .plan-detail{font-size:12px;color:rgba(255,255,255,0.4);margin-top:2px}
-  .plan-price{font-size:16px;font-weight:700;color:#e0e0e0}
-  .search-input{width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:12px 14px 12px 38px;color:#fff;font-size:15px;outline:none;transition:border .2s}
-  .search-input:focus{border-color:rgba(255,255,255,0.3)}
-  .search-input::placeholder{color:rgba(255,255,255,0.25)}
-  .search-wrap{position:relative}
-  .search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;fill:rgba(255,255,255,0.3);pointer-events:none}
-  .filter-btn{padding:6px 14px;border-radius:20px;font-size:12px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:rgba(255,255,255,0.5);cursor:pointer;transition:all .15s;white-space:nowrap}
-  .filter-btn.active{background:rgba(255,255,255,0.1);color:#fff;border-color:rgba(255,255,255,0.2)}
-  .filter-btn:active{transform:scale(0.95)}
-  .menu-item{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.05);cursor:pointer;transition:all .15s}
-  .menu-item:active{opacity:.6}
-  .menu-item:last-child{border-bottom:none}
-  .menu-icon{width:24px;height:24px;fill:rgba(255,255,255,0.6);flex-shrink:0}
-  .menu-arrow{color:rgba(255,255,255,0.2);font-size:18px}
-  .esim-card{background:rgba(255,255,255,0.04);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:14px;margin-bottom:10px;cursor:pointer;transition:all .15s}
-  .esim-card:active{transform:scale(0.98);background:rgba(255,255,255,0.08)}
-  .esim-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
-  .esim-active{background:#aaa;box-shadow:0 0 6px rgba(255,255,255,.2)}
-  .esim-inactive{background:#555}
-  .esim-expired{background:#333}
-  .loader{width:20px;height:20px;border:2px solid rgba(255,255,255,0.08);border-top-color:rgba(255,255,255,0.5);border-radius:50%;animation:spin .6s linear infinite;display:inline-block;vertical-align:middle}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:50;display:none;align-items:flex-end;justify-content:center}
-  .modal-overlay.open{display:flex}
-  .modal-sheet{width:100%;max-width:500px;background:#111;border-radius:24px 24px 0 0;padding:20px 20px calc(20px + env(safe-area-inset-bottom,0));max-height:80vh;overflow-y:auto;animation:slideUp .3s ease}
-  @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-  .modal-handle{width:36px;height:4px;background:rgba(255,255,255,0.12);border-radius:2px;margin:0 auto 16px}
-  .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.8);backdrop-filter:blur(16px);padding:10px 20px;border-radius:12px;font-size:13px;color:#fff;z-index:100;opacity:0;transition:opacity .3s;pointer-events:none;border:1px solid rgba(255,255,255,0.08)}
-  .toast.show{opacity:1}
-  .flex-center{display:flex;align-items:center;justify-content:center}
-  .qr-img{display:block;max-width:240px;margin:16px auto;border-radius:12px}
-  .divider{height:1px;background:rgba(255,255,255,0.05);margin:12px 0}
-  .stat-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
-  .stat-row:last-child{border-bottom:none}
-  .stat-label{color:rgba(255,255,255,0.5);font-size:13px}
-  .stat-value{font-size:14px;font-weight:500}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:#0a0a0a;color:#fff;overscroll-behavior:none;overflow:hidden;height:100dvh;width:100dvw}
+::-webkit-scrollbar{width:0;height:0}
+.safe-top{padding-top:env(safe-area-inset-top,12px)}
+.safe-bottom{padding-bottom:env(safe-area-inset-bottom,8px)}
+.glass{background:rgba(255,255,255,0.04);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.06);border-radius:16px}
+.glass-strong{background:rgba(255,255,255,0.06);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.08);border-radius:20px}
+.tab-bar{display:flex;background:rgba(255,255,255,0.04);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-top:1px solid rgba(255,255,255,0.06);border-radius:20px 20px 0 0;padding:6px 16px;padding-bottom:calc(6px + env(safe-area-inset-bottom,8px));margin:0 8px}
+.tab-btn{flex:1;padding:8px 0;text-align:center;font-size:11px;font-weight:500;color:rgba(255,255,255,0.35);transition:all .2s;position:relative;cursor:pointer;border:none;background:transparent;border-radius:12px}
+.tab-btn.active{color:#fff;background:rgba(255,255,255,0.08)}
+.tab-icon{display:block;margin:0 auto 2px;width:22px;height:22px}
+.tab-icon svg{width:22px;height:22px;fill:currentColor}
+.page{display:none;flex-direction:column;height:100dvh;background:#0a0a0a}
+.page.active{display:flex}
+.page-header{display:flex;align-items:center;padding:12px 16px;gap:12px;min-height:48px;border-bottom:1px solid rgba(255,255,255,0.05)}
+.page-back{width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:50%;transition:background .2s;flex-shrink:0;border:none;background:transparent;color:#fff}
+.page-back:active{background:rgba(255,255,255,0.08)}
+.page-back svg{width:20px;height:20px;fill:currentColor}
+.page-title{font-size:16px;font-weight:600;flex:1}
+.scroll-area{flex:1;overflow-y:auto;padding:16px;-webkit-overflow-scrolling:touch;position:relative}
+.country-card{background:rgba(255,255,255,0.04);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:12px;text-align:center;cursor:pointer;transition:all .15s}
+.country-card:active{transform:scale(0.96);background:rgba(255,255,255,0.08)}
+.country-flag{font-size:28px;display:block;margin-bottom:2px}
+.country-name{font-size:12px;color:rgba(255,255,255,0.7)}
+.plan-card{background:rgba(255,255,255,0.04);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:14px 16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:all .15s}
+.plan-card:active{transform:scale(0.98);background:rgba(255,255,255,0.08)}
+.plan-data{font-size:15px;font-weight:600}
+.plan-detail{font-size:12px;color:rgba(255,255,255,0.4);margin-top:2px}
+.plan-price{font-size:16px;font-weight:700;color:#e0e0e0}
+.search-input{width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:12px 14px 12px 38px;color:#fff;font-size:15px;outline:none;transition:border .2s}
+.search-input:focus{border-color:rgba(255,255,255,0.3)}
+.search-input::placeholder{color:rgba(255,255,255,0.25)}
+.search-wrap{position:relative}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;fill:rgba(255,255,255,0.3);pointer-events:none}
+.filter-btn{padding:6px 14px;border-radius:20px;font-size:12px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:rgba(255,255,255,0.5);cursor:pointer;transition:all .15s;white-space:nowrap}
+.filter-btn.active{background:rgba(255,255,255,0.1);color:#fff;border-color:rgba(255,255,255,0.2)}
+.filter-btn:active{transform:scale(0.95)}
+.menu-item{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.05);cursor:pointer;transition:all .15s}
+.menu-item:active{opacity:.6}
+.menu-item:last-child{border-bottom:none}
+.menu-icon{width:24px;height:24px;fill:rgba(255,255,255,0.6);flex-shrink:0}
+.menu-arrow{color:rgba(255,255,255,0.2);font-size:18px}
+.esim-card{background:rgba(255,255,255,0.04);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:14px;margin-bottom:10px;cursor:pointer;transition:all .15s}
+.esim-card:active{transform:scale(0.98);background:rgba(255,255,255,0.08)}
+.esim-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
+.esim-active{background:#aaa;box-shadow:0 0 6px rgba(255,255,255,.2)}
+.esim-inactive{background:#555}
+.esim-expired{background:#333}
+.loader{width:20px;height:20px;border:2px solid rgba(255,255,255,0.08);border-top-color:rgba(255,255,255,0.5);border-radius:50%;animation:spin .6s linear infinite;display:inline-block;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:50;display:none;align-items:flex-end;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal-sheet{width:100%;max-width:500px;background:#111;border-radius:24px 24px 0 0;padding:20px 20px calc(20px + env(safe-area-inset-bottom,0));max-height:80vh;overflow-y:auto;animation:slideUp .3s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-handle{width:36px;height:4px;background:rgba(255,255,255,0.12);border-radius:2px;margin:0 auto 16px}
+.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.8);backdrop-filter:blur(16px);padding:10px 20px;border-radius:12px;font-size:13px;color:#fff;z-index:100;opacity:0;transition:opacity .3s;pointer-events:none;border:1px solid rgba(255,255,255,0.08)}
+.toast.show{opacity:1}
+.flex-center{display:flex;align-items:center;justify-content:center}
+.qr-img{display:block;max-width:240px;margin:16px auto;border-radius:12px}
+.divider{height:1px;background:rgba(255,255,255,0.05);margin:12px 0}
+.stat-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.stat-row:last-child{border-bottom:none}
+.stat-label{color:rgba(255,255,255,0.5);font-size:13px}
+.stat-value{font-size:14px;font-weight:500}
 </style>
 </head>
 <body>
 
-<!-- ===== MAIN PAGE ===== -->
 <div class="page active" id="pageMain" style="display:flex">
   <div class="page-header" style="border-bottom-color:rgba(255,255,255,0.06)">
     <div style="font-size:18px;font-weight:700;letter-spacing:-0.3px">q1 eSIM</div>
     <div style="flex:1"></div>
-    <div style="font-size:11px;color:rgba(255,255,255,0.3);font-weight:500">v1.0</div>
+    <button onclick="toggleLang()" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:4px 10px;color:#fff;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px">
+      <span id="langBtn">RU</span>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12.87 15.07l-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v1.99h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"/></svg>
+    </button>
   </div>
   <div class="scroll-area" style="flex:1;overflow-y:auto;padding:12px 16px;-webkit-overflow-scrolling:touch" id="tabContent">
     <div id="esimTab">
@@ -105,7 +106,7 @@
         <div style="font-size:18px;font-weight:600" id="userName">Гость</div>
         <div style="font-size:13px;color:rgba(255,255,255,0.4);margin-top:4px"><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:6px;height:6px;border-radius:50%;background:#888;display:inline-block"></span> Онлайн</span></div>
       </div>
-      <div class="glass" style="padding:4px 16px;margin-bottom:16px">
+      <div class="glass" style="padding:4px 16px;margin-bottom:16px" id="profileMenuItems">
         <div class="menu-item" onclick="showPage('esims')">
           <svg class="menu-icon" viewBox="0 0 24 24"><path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h16v2H4v-2z"/></svg>
           <div style="flex:1"><div style="font-size:15px;font-weight:500">Мои eSIM</div><div style="font-size:12px;color:rgba(255,255,255,0.35)" id="esimCount">Загрузка...</div></div>
@@ -136,7 +137,6 @@
   </div>
 </div>
 
-<!-- ===== eSIMS PAGE ===== -->
 <div class="page" id="pageEsims">
   <div class="page-header">
     <button class="page-back" onclick="showPage('main')"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
@@ -145,7 +145,6 @@
   <div class="scroll-area" id="esimList"></div>
 </div>
 
-<!-- ===== eSIM DETAIL PAGE ===== -->
 <div class="page" id="pageEsimDetail">
   <div class="page-header">
     <button class="page-back" onclick="showPage('esims')"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
@@ -154,7 +153,6 @@
   <div class="scroll-area" id="esimDetailContent"></div>
 </div>
 
-<!-- ===== REFERRAL PAGE ===== -->
 <div class="page" id="pageReferral">
   <div class="page-header">
     <button class="page-back" onclick="showPage('main')"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
@@ -163,13 +161,20 @@
   <div class="scroll-area" id="referralContent"></div>
 </div>
 
-<!-- ===== BUY MODAL ===== -->
 <div class="modal-overlay" id="planModal">
   <div class="modal-sheet">
     <div class="modal-handle"></div>
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
-      <span style="font-size:40px" id="modalFlag">🌐</span>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+      <span style="font-size:36px" id="modalFlag">🌐</span>
       <div><div style="font-size:17px;font-weight:600" id="modalCountry">Страна</div><div style="font-size:13px;color:rgba(255,255,255,0.35)">Выберите тариф</div></div>
+    </div>
+    <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:12px;-webkit-overflow-scrolling:touch" id="dayFilterRow">
+      <button class="filter-btn active" data-days="all" onclick="setDayFilter('all',this)">Все</button>
+      <button class="filter-btn" data-days="1" onclick="setDayFilter(1,this)">1 день</button>
+      <button class="filter-btn" data-days="7" onclick="setDayFilter(7,this)">7 дней</button>
+      <button class="filter-btn" data-days="15" onclick="setDayFilter(15,this)">15 дней</button>
+      <button class="filter-btn" data-days="30" onclick="setDayFilter(30,this)">30 дней</button>
+      <button class="filter-btn" data-days="60" onclick="setDayFilter(60,this)">60+ дней</button>
     </div>
     <div id="modalPlans"><div style="text-align:center;padding:24px"><span class="loader"></span></div></div>
   </div>
@@ -188,20 +193,106 @@ let allPlans = {};
 let userEsims = [];
 let userInfo = null;
 let currentFilter = 'all';
+let currentDayFilter = 'all';
+let currentLang = 'ru';
+let currentModalCode = '';
 
-const COUNTRY_CONTINENT = {
-  europe: ['GB','DE','FR','IT','ES','PT','NL','BE','CH','AT','SE','NO','DK','FI','PL','CZ','SK','HU','RO','BG','GR','HR','RS','SI','IE','LT','LV','EE','LU','MT','CY','IS','BA','AL','MK','ME','UA','BY','MD','FO','GI','AD','LI','MC','SM','VA','RU'],
-  asia: ['JP','KR','CN','IN','TH','SG','MY','ID','PH','VN','AE','SA','IL','TR','KZ','UZ','KG','TJ','TM','AZ','AM','GE','IR','IQ','JO','LB','KW','BH','QA','OM','YE','AF','PK','BD','LK','NP','BT','MM','LA','KH','BN','MN','MV','TL','PS','SY'],
-  americas: ['US','CA','MX','BR','AR','CL','CO','PE','EC','VE','UY','PY','BO','CR','PA','GT','SV','HN','NI','DO','CU','JM','TT','BS','BB','BZ','GY','SR'],
-  africa: ['ZA','EG','NG','KE','MA','TN','DZ','LY','GH','CI','SN','CM','UG','TZ','ET','AO','MZ','ZM','ZW','NA','BW','MU','MG','RE','MR','ML','BF','NE','TD','SO','SD','RW','BJ','CG','CD'],
-  oceania: ['AU','NZ','FJ','PG','SB','VU','WS','TO','CK','PF','NC','GU'],
+const I18N = {
+  ru: {
+    searchPlaceholder: 'Поиск страны...',
+    noEsims: 'У вас нет eSIM',
+    noPlans: 'Нет доступных тарифов',
+    loading: 'Загрузка...',
+    guest: 'Гость',
+    online: 'Онлайн',
+    myEsims: 'Мои eSIM',
+    referral: 'Реферальная программа',
+    referralDesc: 'Приглашайте друзей и получайте 30% с каждой покупки',
+    referralHint: 'Деньги начисляются автоматически после покупки друга',
+    yourIncome: 'Ваш доход',
+    commission: 'Комиссия',
+    yourLink: 'Ваша реферальная ссылка',
+    copyLink: 'Скопировать ссылку',
+    copied: 'Скопировано!',
+    support: 'Поддержка',
+    choosePlan: 'Выберите тариф',
+    all: 'Все',
+    day1: '1 день',
+    day7: '7 дней',
+    day15: '15 дней',
+    day30: '30 дней',
+    day60: '60+ дней',
+    buyConfirm: 'Подтвердить покупку?',
+    needLogin: 'Войдите через Telegram',
+    esimBought: 'eSIM куплена! ICCID:',
+    error: 'Ошибка загрузки',
+    esimActive: 'Активна',
+    esimInactive: 'Неактивна',
+    esimExpired: 'Истекла',
+    esimStatus: 'Статус',
+    esimCountry: 'Страна',
+    esimPlan: 'Тариф',
+    esimQr: 'QR-код для активации',
+    back: '← Назад к списку',
+    adminPanel: '🔐 Админ-панель',
+    details: 'Детали eSIM',
+    esimsCount: 'eSIM',
+    days: 'дней',
+  },
+  en: {
+    searchPlaceholder: 'Search country...',
+    noEsims: 'No eSIMs yet',
+    noPlans: 'No plans available',
+    loading: 'Loading...',
+    guest: 'Guest',
+    online: 'Online',
+    myEsims: 'My eSIMs',
+    referral: 'Referral Program',
+    referralDesc: 'Invite friends and get 30% on each purchase',
+    referralHint: 'Rewards are credited automatically after friend\'s purchase',
+    yourIncome: 'Your earnings',
+    commission: 'Commission',
+    yourLink: 'Your referral link',
+    copyLink: 'Copy link',
+    copied: 'Copied!',
+    support: 'Support',
+    choosePlan: 'Choose a plan',
+    all: 'All',
+    day1: '1 day',
+    day7: '7 days',
+    day15: '15 days',
+    day30: '30 days',
+    day60: '60+ days',
+    buyConfirm: 'Confirm purchase?',
+    needLogin: 'Login via Telegram',
+    esimBought: 'eSIM bought! ICCID:',
+    error: 'Load error',
+    esimActive: 'Active',
+    esimInactive: 'Inactive',
+    esimExpired: 'Expired',
+    esimStatus: 'Status',
+    esimCountry: 'Country',
+    esimPlan: 'Plan',
+    esimQr: 'QR code for activation',
+    back: '← Back to list',
+    adminPanel: '🔐 Admin Panel',
+    details: 'eSIM Details',
+    esimsCount: 'eSIM',
+    days: 'days',
+  },
 };
 
-function getContinent(code) {
-  for(const [cont, codes] of Object.entries(COUNTRY_CONTINENT)) {
-    if(codes.includes(code)) return cont;
-  }
-  return null;
+function _(key) { return I18N[currentLang][key] || key; }
+
+function setLang(lang) {
+  currentLang = lang;
+  document.getElementById('langBtn').textContent = lang.toUpperCase();
+  document.getElementById('searchInput').placeholder = _('searchPlaceholder');
+  updateUI();
+}
+
+function toggleLang() {
+  setLang(currentLang === 'ru' ? 'en' : 'ru');
 }
 
 function showToast(msg) {
@@ -218,6 +309,21 @@ async function apiCall(path, method='POST', body=null) {
   return r.json();
 }
 
+const COUNTRY_CONTINENT = {
+  europe: ['GB','DE','FR','IT','ES','PT','NL','BE','CH','AT','SE','NO','DK','FI','PL','CZ','SK','HU','RO','BG','GR','HR','RS','SI','IE','LT','LV','EE','LU','MT','CY','IS','BA','AL','MK','ME','UA','BY','MD','FO','GI','AD','LI','MC','SM','VA','RU'],
+  asia: ['JP','KR','CN','IN','TH','SG','MY','ID','PH','VN','AE','SA','IL','TR','KZ','UZ','KG','TJ','TM','AZ','AM','GE','IR','IQ','JO','LB','KW','BH','QA','OM','YE','AF','PK','BD','LK','NP','BT','MM','LA','KH','BN','MN','MV','TL','PS','SY'],
+  americas: ['US','CA','MX','BR','AR','CL','CO','PE','EC','VE','UY','PY','BO','CR','PA','GT','SV','HN','NI','DO','CU','JM','TT','BS','BB','BZ','GY','SR'],
+  africa: ['ZA','EG','NG','KE','MA','TN','DZ','LY','GH','CI','SN','CM','UG','TZ','ET','AO','MZ','ZM','ZW','NA','BW','MU','MG','RE','MR','ML','BF','NE','TD','SO','SD','RW','BJ','CG','CD'],
+  oceania: ['AU','NZ','FJ','PG','SB','VU','WS','TO','CK','PF','NC','GU'],
+};
+
+function getContinent(code) {
+  for(const [cont, codes] of Object.entries(COUNTRY_CONTINENT)) {
+    if(codes.includes(code)) return cont;
+  }
+  return null;
+}
+
 async function init() {
   try {
     const initData = tg ? tg.initData : '';
@@ -230,14 +336,28 @@ async function init() {
       document.getElementById('avatar').textContent = (userInfo.first_name||'Г')[0].toUpperCase();
       document.getElementById('userName').textContent = userInfo.first_name || 'Гость';
     }
-    document.getElementById('esimCount').textContent = userEsims.length + ' eSIM';
-    document.getElementById('referralBalance').textContent = '$' + (userInfo?.referral_earned||'0.00');
+
+    if(userInfo && userInfo.is_admin) {
+      const menu = document.getElementById('profileMenuItems');
+      const adminItem = document.createElement('div');
+      adminItem.className = 'menu-item';
+      adminItem.setAttribute('onclick', 'openAdmin()');
+      adminItem.innerHTML = '<svg class="menu-icon" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg><div style="flex:1"><div style="font-size:15px;font-weight:500">' + _('adminPanel') + '</div></div><span class="menu-arrow">›</span>';
+      menu.appendChild(adminItem);
+    }
 
     renderCountries();
+    updateUI();
   } catch(e) {
-    showToast('Ошибка загрузки');
+    showToast(_('error'));
     console.error(e);
   }
+}
+
+function updateUI() {
+  document.getElementById('esimCount').textContent = userEsims.length + ' ' + _('esimsCount');
+  document.getElementById('referralBalance').textContent = '$' + (userInfo?.referral_earned||'0.00');
+  document.getElementById('userName').textContent = userInfo?.first_name || _('guest');
 }
 
 function renderCountries() {
@@ -245,13 +365,13 @@ function renderCountries() {
   list.innerHTML = '';
   countries.forEach(c => {
     const cont = getContinent(c.code);
-    list.innerHTML += `<div class="country-card" style="display:flex;align-items:center;gap:12px;text-align:left;padding:10px 12px;margin-bottom:6px" data-continent="${cont||'other'}" onclick="openPlans('${c.code}')"><span style="font-size:28px">${c.flag||'🌐'}</span><div style="flex:1"><div style="font-size:14px;font-weight:500">${c.name}</div></div><span style="color:rgba(255,255,255,0.25);font-size:18px">›</span></div>`;
+    list.innerHTML += '<div class="country-card" style="display:flex;align-items:center;gap:12px;text-align:left;padding:10px 12px;margin-bottom:6px" data-continent="'+(cont||'other')+'" onclick="openPlans(\''+c.code+'\')"><span style="font-size:28px">'+(c.flag||'🌐')+'</span><div style="flex:1"><div style="font-size:14px;font-weight:500">'+c.name+'</div></div><span style="color:rgba(255,255,255,0.25);font-size:18px">›</span></div>';
   });
 }
 
 function setFilter(filter, btn) {
   currentFilter = filter;
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('#filterRow .filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   applyFilter();
 }
@@ -273,10 +393,15 @@ function filterCountries(q) { applyFilter(); }
 async function openPlans(code) {
   const modal = document.getElementById('planModal');
   document.getElementById('modalFlag').textContent = '⏳';
-  document.getElementById('modalCountry').textContent = 'Загрузка...';
+  document.getElementById('modalCountry').textContent = _('loading');
   document.getElementById('modalPlans').innerHTML = '<div style="text-align:center;padding:24px"><span class="loader"></span></div>';
+  currentDayFilter = 'all';
+  document.querySelectorAll('#dayFilterRow .filter-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.days === 'all');
+  });
   modal.classList.add('open');
 
+  currentModalCode = code;
   const c = countries.find(x => x.code === code);
   if(c) { document.getElementById('modalFlag').textContent = c.flag||'🌐'; document.getElementById('modalCountry').textContent = c.name; }
 
@@ -285,26 +410,43 @@ async function openPlans(code) {
     if(!plans.length) {
       const res = await apiCall('/tma/plans', 'POST', {countryCode:code});
       plans = res.plans || [];
+      plans.sort((a, b) => a.days - b.days);
       allPlans[code] = plans;
     }
-    const container = document.getElementById('modalPlans');
-    container.innerHTML = '';
-    if(!plans.length) { container.innerHTML = '<div style="text-align:center;padding:20px;color:rgba(255,255,255,0.35)">Нет доступных тарифов</div>'; return; }
-    plans.forEach(p => {
-      container.innerHTML += `<div class="plan-card" onclick="buyPlan('${code}','${p.id}')">
-        <div><div class="plan-data">${p.data_gb} ГБ</div>
-        <div class="plan-detail">${p.days} дней</div></div>
-        <div class="plan-price">$${p.price}</div>
-      </div>`;
-    });
+    renderPlans(plans);
   } catch(e) {
-    document.getElementById('modalPlans').innerHTML = '<div style="text-align:center;padding:20px;color:rgba(255,255,255,0.35)">Ошибка загрузки тарифов</div>';
+    document.getElementById('modalPlans').innerHTML = '<div style="text-align:center;padding:20px;color:rgba(255,255,255,0.35)">'+_('noPlans')+'</div>';
   }
 }
 
-async function buyPlan(countryCode, planId) {
-  if(!userInfo) { showToast('Войдите через Telegram'); return; }
-  const confirmMsg = 'Подтвердить покупку?';
+function setDayFilter(days, btn) {
+  currentDayFilter = days;
+  document.querySelectorAll('#dayFilterRow .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const plans = allPlans[currentModalCode] || [];
+  renderPlans(plans);
+}
+
+function renderPlans(plans) {
+  const container = document.getElementById('modalPlans');
+  container.innerHTML = '';
+  const filtered = currentDayFilter === 'all' ? plans : plans.filter(p => {
+    if(currentDayFilter === 60) return p.days >= 60;
+    return p.days === currentDayFilter;
+  });
+  if(!filtered.length) { container.innerHTML = '<div style="text-align:center;padding:20px;color:rgba(255,255,255,0.35)">'+_('noPlans')+'</div>'; return; }
+  filtered.forEach(p => {
+    container.innerHTML += '<div class="plan-card" onclick="buyPlan(\''+p.id+'\')">' +
+      '<div><div class="plan-data">'+p.data_gb+' ГБ</div>' +
+      '<div class="plan-detail">'+p.days+' '+_('days')+'</div></div>' +
+      '<div class="plan-price">$'+p.price+'</div>' +
+    '</div>';
+  });
+}
+
+async function buyPlan(planId) {
+  if(!userInfo) { showToast(_('needLogin')); return; }
+  const confirmMsg = _('buyConfirm');
   if(inTelegram) { tg.showConfirm(confirmMsg, async (ok) => { if(!ok) return; await doBuy(planId); }); }
   else { if(!confirm(confirmMsg)) return; await doBuy(planId); }
 }
@@ -314,9 +456,22 @@ async function doBuy(planId) {
     const initData = tg ? tg.initData : '';
     const res = await apiCall('/tma/buy', 'POST', {planId, initData});
     document.getElementById('planModal').classList.remove('open');
-    userEsims = res.esims || userEsims;
-    showToast('eSIM куплена! ICCID: ' + (res.iccid||'в обработке'));
-    document.getElementById('esimCount').textContent = userEsims.length + ' eSIM';
+    const initData2 = tg ? tg.initData : '';
+    const reload = await apiCall('/tma/init', 'POST', {initData: initData2});
+    userEsims = reload.esims || userEsims;
+    userInfo = reload.user || userInfo;
+    if(userInfo && userInfo.is_admin) {
+      if(!document.querySelector('#profileMenuItems .menu-item:last-child[onclick*="admin"]')) {
+        const menu = document.getElementById('profileMenuItems');
+        const adminItem = document.createElement('div');
+        adminItem.className = 'menu-item';
+        adminItem.setAttribute('onclick', 'openAdmin()');
+        adminItem.innerHTML = '<svg class="menu-icon" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg><div style="flex:1"><div style="font-size:15px;font-weight:500">'+_('adminPanel')+'</div></div><span class="menu-arrow">›</span>';
+        menu.appendChild(adminItem);
+      }
+    }
+    updateUI();
+    showToast(_('esimBought') + ' ' + (res.iccid||'—'));
   } catch(e) { showToast(e.message||'Ошибка'); }
 }
 
@@ -330,7 +485,8 @@ function switchTab(tab) {
 
 function showPage(name) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page' + name.charAt(0).toUpperCase() + name.slice(1)).classList.add('active');
+  const el = document.getElementById('page' + name.charAt(0).toUpperCase() + name.slice(1));
+  if(el) el.classList.add('active');
   if(name === 'esims') renderEsims();
   if(name === 'referral') renderReferral();
 }
@@ -339,22 +495,22 @@ function renderEsims() {
   const container = document.getElementById('esimList');
   container.innerHTML = '';
   if(!userEsims.length) {
-    container.innerHTML = '<div style="text-align:center;padding:40px;color:rgba(255,255,255,0.35)">У вас нет eSIM</div>';
+    container.innerHTML = '<div style="text-align:center;padding:40px;color:rgba(255,255,255,0.35)">'+_('noEsims')+'</div>';
     return;
   }
   userEsims.forEach(e => {
     const statusClass = e.status === 'active' ? 'esim-active' : (e.status === 'expired' ? 'esim-expired' : 'esim-inactive');
-    const statusText = e.status === 'active' ? 'Активна' : (e.status === 'expired' ? 'Истекла' : 'Неактивна');
-    container.innerHTML += `<div class="esim-card" onclick="showEsimDetail('${e.iccid}')">
-      <div style="display:flex;align-items:center;gap:10px">
-        <span class="esim-dot ${statusClass}"></span>
-        <div>
-          <div style="font-size:14px;font-weight:500;font-family:monospace">${e.iccid}</div>
-          <div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:2px">${e.country||'—'} · ${e.plan||'—'} · ${statusText}</div>
-        </div>
-      </div>
-      <span style="color:rgba(255,255,255,0.25);font-size:18px">›</span>
-    </div>`;
+    const statusText = e.status === 'active' ? _('esimActive') : (e.status === 'expired' ? _('esimExpired') : _('esimInactive'));
+    container.innerHTML += '<div class="esim-card" onclick="showEsimDetail(\''+e.iccid+'\')">' +
+      '<div style="display:flex;align-items:center;gap:10px">' +
+        '<span class="esim-dot '+statusClass+'"></span>' +
+        '<div>' +
+          '<div style="font-size:14px;font-weight:500;font-family:monospace">'+e.iccid+'</div>' +
+          '<div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:2px">'+(e.country||'—')+' · '+(e.plan||'—')+' · '+statusText+'</div>' +
+        '</div>' +
+      '</div>' +
+      '<span style="color:rgba(255,255,255,0.25);font-size:18px">›</span>' +
+    '</div>';
   });
 }
 
@@ -363,29 +519,28 @@ function showEsimDetail(iccid) {
   if(!e) return;
   const container = document.getElementById('esimDetailContent');
   const statusClass = e.status === 'active' ? 'esim-active' : (e.status === 'expired' ? 'esim-expired' : 'esim-inactive');
-  const statusText = e.status === 'active' ? 'Активна' : (e.status === 'expired' ? 'Истекла' : 'Неактивна');
+  const statusText = e.status === 'active' ? _('esimActive') : (e.status === 'expired' ? _('esimExpired') : _('esimInactive'));
 
   let qrHtml = '';
   if(e.qr_code_data) {
-    qrHtml = `<img class="qr-img" src="data:image/png;base64,${e.qr_code_data}" alt="QR">`;
+    qrHtml = '<img class="qr-img" src="data:image/png;base64,'+e.qr_code_data+'" alt="QR">';
   } else if(e.qr_code_url) {
-    qrHtml = `<img class="qr-img" src="${e.qr_code_url}" alt="QR">`;
+    qrHtml = '<img class="qr-img" src="'+e.qr_code_url+'" alt="QR">';
   }
 
-  container.innerHTML = `
-    <div class="glass-strong" style="padding:20px;text-align:center;margin-bottom:16px">
-      <div style="font-size:32px;margin-bottom:4px">📱</div>
-      <div style="font-size:13px;color:rgba(255,255,255,0.4)">ICCID</div>
-      <div style="font-size:14px;font-family:monospace;margin-top:2px">${e.iccid}</div>
-    </div>
-    <div class="glass" style="padding:16px;margin-bottom:16px">
-      <div class="stat-row"><span class="stat-label">Статус</span><span class="stat-value"><span class="esim-dot ${statusClass}" style="vertical-align:middle"></span>${statusText}</span></div>
-      <div class="stat-row"><span class="stat-label">Страна</span><span class="stat-value">${e.country||'—'}</span></div>
-      <div class="stat-row"><span class="stat-label">Тариф</span><span class="stat-value">${e.plan||'—'}</span></div>
-    </div>
-    ${qrHtml ? `<div class="glass" style="padding:16px;margin-bottom:16px"><div style="font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:8px">QR-код для активации</div>${qrHtml}</div>` : ''}
-    <button onclick="showPage('esims')" style="width:100%;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#fff;font-size:14px;cursor:pointer;margin-bottom:16px">← Назад к списку</button>
-  `;
+  container.innerHTML = '' +
+    '<div class="glass-strong" style="padding:20px;text-align:center;margin-bottom:16px">' +
+      '<div style="font-size:32px;margin-bottom:4px">📱</div>' +
+      '<div style="font-size:13px;color:rgba(255,255,255,0.4)">ICCID</div>' +
+      '<div style="font-size:14px;font-family:monospace;margin-top:2px">'+e.iccid+'</div>' +
+    '</div>' +
+    '<div class="glass" style="padding:16px;margin-bottom:16px">' +
+      '<div class="stat-row"><span class="stat-label">'+_('esimStatus')+'</span><span class="stat-value"><span class="esim-dot '+statusClass+'" style="vertical-align:middle"></span>'+statusText+'</span></div>' +
+      '<div class="stat-row"><span class="stat-label">'+_('esimCountry')+'</span><span class="stat-value">'+(e.country||'—')+'</span></div>' +
+      '<div class="stat-row"><span class="stat-label">'+_('esimPlan')+'</span><span class="stat-value">'+(e.plan||'—')+'</span></div>' +
+    '</div>' +
+    (qrHtml ? '<div class="glass" style="padding:16px;margin-bottom:16px"><div style="font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:8px">'+_('esimQr')+'</div>'+qrHtml+'</div>' : '') +
+    '<button onclick="showPage(\'esims\')" style="width:100%;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#fff;font-size:14px;cursor:pointer;margin-bottom:16px">'+_('back')+'</button>';
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('pageEsimDetail').classList.add('active');
 }
@@ -393,32 +548,31 @@ function showEsimDetail(iccid) {
 function renderReferral() {
   const container = document.getElementById('referralContent');
   if(!userInfo) {
-    container.innerHTML = '<div style="text-align:center;padding:40px;color:rgba(255,255,255,0.35)">Войдите через Telegram</div>';
+    container.innerHTML = '<div style="text-align:center;padding:40px;color:rgba(255,255,255,0.35)">'+_('needLogin')+'</div>';
     return;
   }
   const link = userInfo.referral_link || 'https://t.me/q1esim_bot';
-  container.innerHTML = `
-    <div class="glass-strong" style="padding:20px;text-align:center;margin-bottom:16px">
-      <div style="font-size:32px;margin-bottom:4px">🎁</div>
-      <div style="font-size:17px;font-weight:600">Реферальная программа</div>
-      <div style="font-size:13px;color:rgba(255,255,255,0.4);margin-top:4px">Приглашайте друзей и получайте 30% с каждой покупки</div>
-    </div>
-    <div class="glass" style="padding:16px;margin-bottom:16px">
-      <div class="stat-row"><span class="stat-label">Ваш доход</span><span class="stat-value">$${userInfo.referral_earned||'0.00'}</span></div>
-      <div class="stat-row"><span class="stat-label">Комиссия</span><span class="stat-value">30%</span></div>
-    </div>
-    <div class="glass" style="padding:16px;margin-bottom:16px">
-      <div style="font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:8px">Ваша реферальная ссылка</div>
-      <div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:10px;font-size:12px;font-family:monospace;word-break:break-all;margin-bottom:10px;color:rgba(255,255,255,0.7)">${link}</div>
-      <button onclick="copyReferralLink('${link}')" style="width:100%;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:#fff;font-size:14px;cursor:pointer">📋 Скопировать ссылку</button>
-    </div>
-    <div style="font-size:12px;color:rgba(255,255,255,0.25);text-align:center;margin-bottom:16px">Деньги начисляются автоматически после покупки друга</div>
-  `;
+  container.innerHTML = '' +
+    '<div class="glass-strong" style="padding:20px;text-align:center;margin-bottom:16px">' +
+      '<div style="font-size:32px;margin-bottom:4px">🎁</div>' +
+      '<div style="font-size:17px;font-weight:600">'+_('referral')+'</div>' +
+      '<div style="font-size:13px;color:rgba(255,255,255,0.4);margin-top:4px">'+_('referralDesc')+'</div>' +
+    '</div>' +
+    '<div class="glass" style="padding:16px;margin-bottom:16px">' +
+      '<div class="stat-row"><span class="stat-label">'+_('yourIncome')+'</span><span class="stat-value">$'+(userInfo.referral_earned||'0.00')+'</span></div>' +
+      '<div class="stat-row"><span class="stat-label">'+_('commission')+'</span><span class="stat-value">30%</span></div>' +
+    '</div>' +
+    '<div class="glass" style="padding:16px;margin-bottom:16px">' +
+      '<div style="font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:8px">'+_('yourLink')+'</div>' +
+      '<div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:10px;font-size:12px;font-family:monospace;word-break:break-all;margin-bottom:10px;color:rgba(255,255,255,0.7)">'+link+'</div>' +
+      '<button onclick="copyReferralLink(\''+link+'\')" style="width:100%;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:#fff;font-size:14px;cursor:pointer">📋 '+_('copyLink')+'</button>' +
+    '</div>' +
+    '<div style="font-size:12px;color:rgba(255,255,255,0.25);text-align:center;margin-bottom:16px">'+_('referralHint')+'</div>';
 }
 
 function copyReferralLink(link) {
   if(navigator.clipboard) {
-    navigator.clipboard.writeText(link).then(() => showToast('Скопировано!'));
+    navigator.clipboard.writeText(link).then(() => showToast(_('copied')));
   } else { showToast(link); }
   if(tg) tg.HapticFeedback.notificationOccurred('success');
 }
@@ -426,6 +580,12 @@ function copyReferralLink(link) {
 function support() {
   if(inTelegram) tg.openTelegramLink('https://t.me/q1esim_support');
   else window.open('https://t.me/q1esim_support', '_blank');
+}
+
+function openAdmin() {
+  const url = 'https://t.me/q1esim_bot?start=admin';
+  if(inTelegram) tg.openTelegramLink(url);
+  else window.open(url, '_blank');
 }
 
 document.getElementById('planModal').addEventListener('click', function(e) {

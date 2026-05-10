@@ -84,11 +84,11 @@ async def lifespan(app: FastAPI) -> AsyncGenerator:
     # Set bot commands & menu button
     await _bot.set_my_commands([
         BotCommand(command="start", description="Home"),
-        BotCommand(command="shop", description="Open eSIM Store"),
+        BotCommand(command="shop", description="Open App"),
     ])
     await _bot.set_chat_menu_button(
         menu_button=MenuButtonWebApp(
-            text="🛍️ Open Store",
+            text="🛍️ Open",
             web_app=WebAppInfo(url="https://app.q1esim.site/tma"),
         )
     )

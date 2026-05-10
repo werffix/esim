@@ -197,6 +197,7 @@ async def tma_init(body: dict, request: Request):
                 "referral_earned": referral_earned,
                 "referral_code": user.referral_code,
                 "referral_link": f"https://t.me/{settings.BOT_USERNAME}?start={user.referral_code}",
+                "is_admin": user.telegram_id in settings.ADMIN_IDS,
             }
 
         return {

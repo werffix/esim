@@ -19,6 +19,7 @@ _STRINGS: dict[str, dict[str, str]] = {
         "menu_support": "💬 Support",
         "menu_referral": "🎁 Referral",
         "menu_language": "🌐 Language",
+        "menu_main": "Main Menu",
         # Country selection
         "select_country": "🌍 <b>Select a country</b>\n\nChoose the country where you need mobile data:",
         "country_not_found": "❌ Country not found.",
@@ -111,7 +112,7 @@ _STRINGS: dict[str, dict[str, str]] = {
         "admin_btn_sync": "🔄 Sync Catalog",
         "admin_btn_exit": "🚪 Back to Menu",
         "menu_admin": "🔐 Admin Panel",
-        "menu_open_app": "Open Store",
+        "menu_open_app": "Open",
         # Support
         "support_message": "💬 <b>Support</b>\n\nFor help, contact: @q1esim_support\n\nOr describe your issue and we'll get back to you:",
         "support_sent": "✅ Your message has been forwarded to support.",
@@ -133,6 +134,7 @@ _STRINGS: dict[str, dict[str, str]] = {
         "menu_support": "💬 Поддержка",
         "menu_referral": "🎁 Реферальная программа",
         "menu_language": "🌐 Язык",
+        "menu_main": "Главное меню",
         # Country selection
         "select_country": "🌍 <b>Выберите страну</b>\n\nВыберите страну, где вам нужен мобильный интернет:",
         "country_not_found": "❌ Страна не найдена.",
@@ -225,7 +227,7 @@ _STRINGS: dict[str, dict[str, str]] = {
         "admin_btn_sync": "🔄 Синхр. каталог",
         "admin_btn_exit": "🚪 В меню",
         "menu_admin": "🔐 Админ-панель",
-        "menu_open_app": "Открыть магазин",
+        "menu_open_app": "Открыть приложение",
         # Support
         "support_message": "💬 <b>Поддержка</b>\n\nДля помощи: @q1esim_support\n\nОпишите вашу проблему:",
         "support_sent": "✅ Ваше сообщение отправлено в поддержку.",

@@ -4,7 +4,7 @@ from decimal import Decimal
 from aiogram import F, Router
 from aiogram.filters import Command, CommandStart
 from aiogram.fsm.context import FSMContext
-from aiogram.types import BufferedInputFile, CallbackQuery, Message
+from aiogram.types import BufferedInputFile, CallbackQuery, KeyboardButton, Message, ReplyKeyboardMarkup
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.bot.keyboards.keyboards import (
@@ -59,17 +59,25 @@ async def cmd_start(message: Message, user: User, lang: str, state: FSMContext) 
         parse_mode="HTML",
         reply_markup=main_menu_kb(lang, is_admin=is_admin),
     )
+    await message.answer(
+        t("choose_action", lang),
+        reply_markup=ReplyKeyboardMarkup(
+            keyboard=[[KeyboardButton(text="📋 " + t("menu_main", lang))]],
+            resize_keyboard=True,
+            is_persistent=True,
+        ),
+    )
 
 
 @router.callback_query(F.data == "menu:start")
 async def cb_menu_start(cb: CallbackQuery, user: User, lang: str, state: FSMContext) -> None:
     await state.clear()
     is_admin = user.telegram_id in settings.ADMIN_IDS
-    await cb.message.edit_text(
-        t("welcome", lang),
-        parse_mode="HTML",
-        reply_markup=main_menu_kb(lang, is_admin=is_admin),
-    )
+    kb = main_menu_kb(lang, is_admin=is_admin)
+    if cb.message.photo:
+        await cb.message.edit_caption(caption=t("welcome", lang), parse_mode="HTML", reply_markup=kb)
+    else:
+        await cb.message.edit_text(t("welcome", lang), parse_mode="HTML", reply_markup=kb)
     await cb.answer()
 
 
@@ -83,6 +91,18 @@ async def cmd_shop(message: Message, user: User, lang: str) -> None:
         web_app=WebAppInfo(url="https://app.q1esim.site/tma"),
     ))
     await message.answer(t("welcome", lang), parse_mode="HTML", reply_markup=builder.as_markup())
+
+
+@router.message(F.text.in_(["📋 Главное меню", "📋 Main Menu"]))
+async def msg_main_menu(message: Message, user: User, lang: str, state: FSMContext) -> None:
+    await state.clear()
+    is_admin = user.telegram_id in settings.ADMIN_IDS
+    await message.answer_photo(
+        _read_logo(),
+        caption=t("welcome", lang),
+        parse_mode="HTML",
+        reply_markup=main_menu_kb(lang, is_admin=is_admin),
+    )
 
 
 # ─── Buy flow ────────────────────────────────────────────────────────────────
