@@ -1,25 +1,47 @@
 import hashlib
 import hmac
 import json
+import uuid
 import urllib.parse
 from typing import Any
 
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import HTMLResponse
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.cache import get_cache
 from app.core.config import settings
 from app.esim.nova_client import get_nova_client
-from app.models.models import User
-from app.repositories.repositories import CountryRepository, EsimRepository, OrderRepository, PlanRepository
+from app.models.models import ReferralEarning, User
+from app.repositories.repositories import CountryRepository, EsimRepository, PlanRepository, UserRepository
 from app.services.esim_service import CatalogService, EsimService, OrderService
 from app.db.database import get_session
 
 router = APIRouter(tags=["tma"])
 
+COUNTRY_NAMES_RU: dict[str, str] = {
+    "RU": "Россия", "US": "США", "GB": "Великобритания", "DE": "Германия",
+    "FR": "Франция", "IT": "Италия", "ES": "Испания", "PT": "Португалия",
+    "NL": "Нидерланды", "BE": "Бельгия", "CH": "Швейцария", "AT": "Австрия",
+    "SE": "Швеция", "NO": "Норвегия", "DK": "Дания", "FI": "Финляндия",
+    "PL": "Польша", "CZ": "Чехия", "SK": "Словакия", "HU": "Венгрия",
+    "RO": "Румыния", "BG": "Болгария", "GR": "Греция", "HR": "Хорватия",
+    "IE": "Ирландия", "LT": "Литва", "LV": "Латвия", "EE": "Эстония",
+    "JP": "Япония", "KR": "Южная Корея", "CN": "Китай", "IN": "Индия",
+    "TH": "Таиланд", "SG": "Сингапур", "MY": "Малайзия", "ID": "Индонезия",
+    "PH": "Филиппины", "VN": "Вьетнам", "AE": "ОАЭ", "SA": "Саудовская Аравия",
+    "IL": "Израиль", "TR": "Турция", "MY": "Малайзия",
+    "AU": "Австралия", "NZ": "Новая Зеландия",
+    "ZA": "ЮАР", "EG": "Египет", "MA": "Марокко", "KE": "Кения",
+    "CA": "Канада", "MX": "Мексика", "BR": "Бразилия", "AR": "Аргентина",
+    "CL": "Чили", "CO": "Колумбия", "PE": "Перу",
+}
+
 
 def _verify_init_data(init_data: str) -> dict[str, Any] | None:
+    if not init_data:
+        return None
     parsed = urllib.parse.parse_qs(init_data, keep_blank_values=True)
     data = {k: v[0] for k, v in parsed.items()}
 
@@ -42,8 +64,15 @@ def _verify_init_data(init_data: str) -> dict[str, Any] | None:
     return data
 
 
+def _country_name(c: Any, lang: str = "ru") -> str:
+    name = COUNTRY_NAMES_RU.get(c.code)
+    if name:
+        return name
+    return c.name_ru if (lang == "ru" and c.name_ru) else c.name
+
+
 @router.get("/tma")
-async def serve_tma():
+async def serve_tma(request: Request):
     with open("app/static/tma.html") as f:
         return HTMLResponse(f.read())
 
@@ -52,65 +81,61 @@ async def serve_tma():
 async def tma_init(body: dict, request: Request):
     init_data = body.get("initData", "")
     verified = _verify_init_data(init_data)
-    if not verified:
-        raise HTTPException(401, "Invalid init data")
-
-    tg_user = verified.get("user", {})
-    telegram_id = tg_user.get("id")
 
     async with get_session() as session:
-        from app.repositories.repositories import UserRepository
-        user_repo = UserRepository(session)
-        user = await user_repo.get_by_telegram_id(telegram_id)
+        if verified:
+            tg_user = verified.get("user", {})
+            telegram_id = tg_user.get("id")
+            lang = tg_user.get("language_code", "ru")
 
-        if not user:
-            user = User(
-                telegram_id=telegram_id,
-                username=tg_user.get("username"),
-                first_name=tg_user.get("first_name", ""),
-                last_name=tg_user.get("last_name", ""),
-                language_code=tg_user.get("language_code", "en"),
-            )
-            session.add(user)
-            await session.commit()
-            await session.refresh(user)
+            user_repo = UserRepository(session)
+            user = await user_repo.get_by_telegram_id(telegram_id)
+
+            if not user:
+                user = User(
+                    telegram_id=telegram_id,
+                    username=tg_user.get("username"),
+                    first_name=tg_user.get("first_name", ""),
+                    last_name=tg_user.get("last_name", ""),
+                    language_code=lang,
+                )
+                session.add(user)
+                await session.commit()
+                await session.refresh(user)
+        else:
+            lang = "ru"
+            user = None
 
         nova = await get_nova_client()
         cache = await get_cache()
         catalog = CatalogService(session, nova, cache)
         all_countries = await catalog.get_active_countries()
-        esim_repo = EsimRepository(session)
-        esims = await esim_repo.get_user_esims(user.id)
 
         esim_list = []
-        for e in esims:
-            esim_list.append({
-                "iccid": e.iccid,
-                "status": e.status,
-                "country": "",
-                "plan": "",
-            })
+        if user:
+            esim_repo = EsimRepository(session)
+            esims = await esim_repo.get_user_esims(user.id)
+            for e in esims:
+                esim_list.append({"iccid": e.iccid, "status": e.status, "country": "", "plan": ""})
 
         countries_data = [
             {
                 "code": c.code,
-                "name": c.name_ru if (user.language_code == "ru" and c.name_ru) else c.name,
+                "name": _country_name(c, lang),
                 "flag": c.flag_emoji or "",
             }
             for c in all_countries
         ]
 
-        from app.models.models import ReferralEarning
-        from sqlalchemy import func, select
-        result = await session.execute(
-            select(func.coalesce(func.sum(ReferralEarning.amount), 0))
-            .where(ReferralEarning.referrer_id == user.id)
-        )
-        referral_earned = float(result.scalar())
-
-        return {
-            "user": {
-                "id": user.id,
+        user_data = None
+        if user:
+            result = await session.execute(
+                select(func.coalesce(func.sum(ReferralEarning.amount), 0))
+                .where(ReferralEarning.referrer_id == user.id)
+            )
+            referral_earned = float(result.scalar())
+            user_data = {
+                "id": str(user.id),
                 "telegram_id": user.telegram_id,
                 "first_name": user.first_name,
                 "last_name": user.last_name,
@@ -119,7 +144,10 @@ async def tma_init(body: dict, request: Request):
                 "referral_earned": referral_earned,
                 "referral_code": user.referral_code,
                 "referral_link": f"https://t.me/{settings.BOT_USERNAME}?start={user.referral_code}",
-            },
+            }
+
+        return {
+            "user": user_data,
             "countries": countries_data,
             "plans": {},
             "esims": esim_list,
@@ -127,7 +155,7 @@ async def tma_init(body: dict, request: Request):
 
 
 @router.post("/tma/plans")
-async def tma_plans(body: dict, request: Request):
+async def tma_plans(body: dict):
     country_code = body.get("countryCode", "")
     if not country_code:
         raise HTTPException(400, "countryCode required")
@@ -139,7 +167,7 @@ async def tma_plans(body: dict, request: Request):
             raise HTTPException(404, "Country not found")
 
         plan_repo = PlanRepository(session)
-        plans = await plan_repo.get_active_by_country(country.id)
+        plans = await plan_repo.get_by_country(country.id)
 
     plans_data = [
         {
@@ -155,31 +183,27 @@ async def tma_plans(body: dict, request: Request):
 
 
 @router.post("/tma/buy")
-async def tma_buy(body: dict, request: Request):
+async def tma_buy(body: dict):
     init_data = body.get("initData", "")
     plan_id = body.get("planId", "")
 
     verified = _verify_init_data(init_data)
     if not verified:
-        raise HTTPException(401, "Invalid init data")
+        raise HTTPException(401, "Требуется авторизация через Telegram")
 
     tg_user = verified.get("user", {})
     telegram_id = tg_user.get("id")
 
-    import uuid
-    from app.models.models import Order
-
     async with get_session() as session:
-        from app.repositories.repositories import UserRepository
         user_repo = UserRepository(session)
         user = await user_repo.get_by_telegram_id(telegram_id)
         if not user:
-            raise HTTPException(404, "User not found")
+            raise HTTPException(404, "Пользователь не найден")
 
         plan_repo = PlanRepository(session)
         plan = await plan_repo.get(uuid.UUID(plan_id))
         if not plan:
-            raise HTTPException(404, "Plan not found")
+            raise HTTPException(404, "Тариф не найден")
 
         order_service = OrderService(session)
         order = await order_service.create_order(user.id, plan)
