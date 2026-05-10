@@ -17,27 +17,42 @@
   .tab-bar{display:flex;background:rgba(255,255,255,0.04);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-top:1px solid rgba(255,255,255,0.06);border-radius:20px 20px 0 0;padding:6px 8px;padding-bottom:calc(6px + env(safe-area-inset-bottom))}
   .tab-btn{flex:1;padding:8px 0;text-align:center;font-size:11px;font-weight:500;color:rgba(255,255,255,0.35);transition:all .2s;position:relative;cursor:pointer;border:none;background:transparent;border-radius:12px}
   .tab-btn.active{color:#fff;background:rgba(255,255,255,0.08)}
-  .tab-icon{display:block;font-size:20px;margin-bottom:1px}
+  .tab-icon{display:block;margin:0 auto 2px;width:22px;height:22px}
+  .tab-icon svg{width:22px;height:22px;fill:currentColor}
+  .page{display:none;flex-direction:column;height:100dvh;position:absolute;inset:0;z-index:1;background:#0a0a0a}
+  .page.active{display:flex;z-index:2}
+  .page-main{z-index:1}
+  .page-header{display:flex;align-items:center;padding:12px 16px;gap:12px;min-height:48px;border-bottom:1px solid rgba(255,255,255,0.05)}
+  .page-back{width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:50%;transition:background .2s;flex-shrink:0;border:none;background:transparent;color:#fff}
+  .page-back:active{background:rgba(255,255,255,0.08)}
+  .page-back svg{width:20px;height:20px;fill:currentColor}
+  .page-title{font-size:16px;font-weight:600;flex:1}
+  .scroll-area{flex:1;overflow-y:auto;padding:16px;-webkit-overflow-scrolling:touch}
   .country-card{background:rgba(255,255,255,0.04);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:12px;text-align:center;cursor:pointer;transition:all .15s}
   .country-card:active{transform:scale(0.96);background:rgba(255,255,255,0.08)}
-  .country-flag{font-size:28px;display:block;margin-bottom:4px}
+  .country-flag{font-size:28px;display:block;margin-bottom:2px}
   .country-name{font-size:12px;color:rgba(255,255,255,0.7)}
   .plan-card{background:rgba(255,255,255,0.04);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.06);border-radius:16px;padding:14px 16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:all .15s}
   .plan-card:active{transform:scale(0.98);background:rgba(255,255,255,0.08)}
   .plan-data{font-size:15px;font-weight:600}
   .plan-detail{font-size:12px;color:rgba(255,255,255,0.4);margin-top:2px}
   .plan-price{font-size:16px;font-weight:700;color:#e0e0e0}
-  .search-input{width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:12px 14px;color:#fff;font-size:15px;outline:none;transition:border .2s}
+  .search-input{width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:12px 14px 12px 38px;color:#fff;font-size:15px;outline:none;transition:border .2s}
   .search-input:focus{border-color:rgba(255,255,255,0.3)}
   .search-input::placeholder{color:rgba(255,255,255,0.25)}
+  .search-wrap{position:relative}
+  .search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;fill:rgba(255,255,255,0.3);pointer-events:none}
   .filter-btn{padding:6px 14px;border-radius:20px;font-size:12px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:rgba(255,255,255,0.5);cursor:pointer;transition:all .15s;white-space:nowrap}
   .filter-btn.active{background:rgba(255,255,255,0.1);color:#fff;border-color:rgba(255,255,255,0.2)}
   .filter-btn:active{transform:scale(0.95)}
   .menu-item{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.05);cursor:pointer;transition:all .15s}
   .menu-item:active{opacity:.6}
   .menu-item:last-child{border-bottom:none}
-  .esim-item{background:rgba(255,255,255,0.04);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
-  .esim-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:8px}
+  .menu-icon{width:24px;height:24px;fill:rgba(255,255,255,0.6);flex-shrink:0}
+  .menu-arrow{color:rgba(255,255,255,0.2);font-size:18px}
+  .esim-card{background:rgba(255,255,255,0.04);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:14px;margin-bottom:10px;cursor:pointer;transition:all .15s}
+  .esim-card:active{transform:scale(0.98);background:rgba(255,255,255,0.08)}
+  .esim-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
   .esim-active{background:#aaa;box-shadow:0 0 6px rgba(255,255,255,.2)}
   .esim-inactive{background:#555}
   .esim-expired{background:#333}
@@ -48,63 +63,106 @@
   .modal-sheet{width:100%;max-width:500px;background:#111;border-radius:24px 24px 0 0;padding:20px 20px calc(20px + env(safe-area-inset-bottom,0));max-height:80vh;overflow-y:auto;animation:slideUp .3s ease}
   @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
   .modal-handle{width:36px;height:4px;background:rgba(255,255,255,0.12);border-radius:2px;margin:0 auto 16px}
-  .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:rgba(255,255,255,0.08);backdrop-filter:blur(16px);padding:10px 20px;border-radius:12px;font-size:13px;color:#fff;z-index:100;opacity:0;transition:opacity .3s;pointer-events:none}
+  .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.8);backdrop-filter:blur(16px);padding:10px 20px;border-radius:12px;font-size:13px;color:#fff;z-index:100;opacity:0;transition:opacity .3s;pointer-events:none;border:1px solid rgba(255,255,255,0.08)}
   .toast.show{opacity:1}
-  .scroll-area{flex:1;overflow-y:auto;padding:16px 16px 0;-webkit-overflow-scrolling:touch}
+  .flex-center{display:flex;align-items:center;justify-content:center}
+  .qr-img{display:block;max-width:240px;margin:16px auto;border-radius:12px}
+  .divider{height:1px;background:rgba(255,255,255,0.05);margin:12px 0}
+  .stat-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+  .stat-row:last-child{border-bottom:none}
+  .stat-label{color:rgba(255,255,255,0.5);font-size:13px}
+  .stat-value{font-size:14px;font-weight:500}
 </style>
 </head>
 <body>
 
-<div style="height:100dvh;display:flex;flex-direction:column">
-  <div class="scroll-area" id="tabContent">
-    <div id="esimTab">
-      <input class="search-input" id="searchInput" placeholder="🔍 Поиск страны..." oninput="filterCountries(this.value)" style="margin-bottom:12px">
-      <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:12px;-webkit-overflow-scrolling:touch" id="filterRow">
-        <button class="filter-btn active" data-filter="all" onclick="setFilter('all',this)">Все</button>
-        <button class="filter-btn" data-filter="europe" onclick="setFilter('europe',this)">Европа</button>
-        <button class="filter-btn" data-filter="asia" onclick="setFilter('asia',this)">Азия</button>
-        <button class="filter-btn" data-filter="americas" onclick="setFilter('americas',this)">Америка</button>
-        <button class="filter-btn" data-filter="africa" onclick="setFilter('africa',this)">Африка</button>
-        <button class="filter-btn" data-filter="oceania" onclick="setFilter('oceania',this)">Океания</button>
+<!-- ===== MAIN PAGE ===== -->
+<div class="page page-main active" id="pageMain">
+  <div style="flex:1;display:flex;flex-direction:column">
+    <div class="scroll-area" id="tabContent">
+      <div id="esimTab">
+        <div class="search-wrap" style="margin-bottom:12px">
+          <svg class="search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+          <input class="search-input" id="searchInput" placeholder="Поиск страны..." oninput="filterCountries(this.value)">
+        </div>
+        <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:12px;-webkit-overflow-scrolling:touch" id="filterRow">
+          <button class="filter-btn active" data-filter="all" onclick="setFilter('all',this)">Все</button>
+          <button class="filter-btn" data-filter="europe" onclick="setFilter('europe',this)">Европа</button>
+          <button class="filter-btn" data-filter="asia" onclick="setFilter('asia',this)">Азия</button>
+          <button class="filter-btn" data-filter="americas" onclick="setFilter('americas',this)">Америка</button>
+          <button class="filter-btn" data-filter="africa" onclick="setFilter('africa',this)">Африка</button>
+          <button class="filter-btn" data-filter="oceania" onclick="setFilter('oceania',this)">Океания</button>
+        </div>
+        <div id="countryList"></div>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px" id="countryGrid"></div>
-      <div id="countryList" style="margin-bottom:16px"></div>
+
+      <div id="profileTab" style="display:none">
+        <div class="glass-strong" style="padding:24px;text-align:center;margin-bottom:16px">
+          <div style="width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,0.1);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:28px;color:#fff;font-weight:600" id="avatar">?</div>
+          <div style="font-size:18px;font-weight:600" id="userName">Гость</div>
+          <div style="font-size:13px;color:rgba(255,255,255,0.4);margin-top:4px"><span style="display:inline-flex;align-items:center;gap:6px"><span style="width:6px;height:6px;border-radius:50%;background:#888;display:inline-block"></span> Онлайн</span></div>
+        </div>
+        <div class="glass" style="padding:4px 16px;margin-bottom:16px">
+          <div class="menu-item" onclick="showPage('esims')">
+            <svg class="menu-icon" viewBox="0 0 24 24"><path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h16v2H4v-2z"/></svg>
+            <div style="flex:1"><div style="font-size:15px;font-weight:500">Мои eSIM</div><div style="font-size:12px;color:rgba(255,255,255,0.35)" id="esimCount">Загрузка...</div></div>
+            <span class="menu-arrow">›</span>
+          </div>
+          <div class="menu-item" onclick="showPage('referral')">
+            <svg class="menu-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2a7.2 7.2 0 01-6-3.22c.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08a7.2 7.2 0 01-6 3.22z"/></svg>
+            <div style="flex:1"><div style="font-size:15px;font-weight:500">Реферальная программа</div><div style="font-size:12px;color:rgba(255,255,255,0.35)"><span id="referralBalance">$0.00</span></div></div>
+            <span class="menu-arrow">›</span>
+          </div>
+          <div class="menu-item" onclick="support()">
+            <svg class="menu-icon" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z"/></svg>
+            <div style="flex:1"><div style="font-size:15px;font-weight:500">Поддержка</div><div style="font-size:12px;color:rgba(255,255,255,0.35)">@q1esim_support</div></div>
+            <span class="menu-arrow">›</span>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div id="profileTab" style="display:none">
-      <div class="glass-strong" style="padding:24px;text-align:center;margin-bottom:16px">
-        <div style="width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,0.1);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:28px;color:#fff;font-weight:600" id="avatar">?</div>
-        <div style="font-size:18px;font-weight:600" id="userName">Гость</div>
-        <div style="font-size:13px;color:rgba(255,255,255,0.4);margin-top:4px">
-          <span style="display:inline-flex;align-items:center;gap:6px"><span style="width:6px;height:6px;border-radius:50%;background:#888;display:inline-block"></span> Онлайн</span>
-        </div>
-      </div>
-      <div class="glass" style="padding:4px 16px;margin-bottom:16px">
-        <div class="menu-item" onclick="goToMyEsims()">
-          <span style="font-size:22px">📱</span>
-          <div style="flex:1"><div style="font-size:15px;font-weight:500">Мои eSIM</div><div style="font-size:12px;color:rgba(255,255,255,0.35)" id="esimCount">Загрузка...</div></div>
-          <span style="color:rgba(255,255,255,0.25);font-size:18px">›</span>
-        </div>
-        <div class="menu-item" onclick="copyReferral()">
-          <span style="font-size:22px">🎁</span>
-          <div style="flex:1"><div style="font-size:15px;font-weight:500">Реферальная программа</div><div style="font-size:12px;color:rgba(255,255,255,0.35)">Заработано <span id="referralBalance">$0.00</span></div></div>
-          <span style="color:rgba(255,255,255,0.25)">›</span>
-        </div>
-        <div class="menu-item" onclick="support()">
-          <span style="font-size:22px">💬</span>
-          <div style="flex:1"><div style="font-size:15px;font-weight:500">Поддержка</div><div style="font-size:12px;color:rgba(255,255,255,0.35)">@q1esim_support</div></div>
-          <span style="color:rgba(255,255,255,0.25)">›</span>
-        </div>
-      </div>
+    <div class="tab-bar" id="tabBar">
+      <button class="tab-btn active" id="tabEsim" onclick="switchTab('esim')">
+        <span class="tab-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg></span>
+        eSIM
+      </button>
+      <button class="tab-btn" id="tabProfile" onclick="switchTab('profile')">
+        <span class="tab-icon"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></span>
+        Профиль
+      </button>
     </div>
-  </div>
-
-  <div class="tab-bar" id="tabBar">
-    <button class="tab-btn active" id="tabEsim" onclick="switchTab('esim')"><span class="tab-icon">🌍</span>eSIM</button>
-    <button class="tab-btn" id="tabProfile" onclick="switchTab('profile')"><span class="tab-icon">👤</span>Профиль</button>
   </div>
 </div>
 
+<!-- ===== eSIMS PAGE ===== -->
+<div class="page" id="pageEsims">
+  <div class="page-header">
+    <button class="page-back" onclick="showPage('main')"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
+    <span class="page-title">Мои eSIM</span>
+  </div>
+  <div class="scroll-area" id="esimList"></div>
+</div>
+
+<!-- ===== eSIM DETAIL PAGE ===== -->
+<div class="page" id="pageEsimDetail">
+  <div class="page-header">
+    <button class="page-back" onclick="showPage('esims')"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
+    <span class="page-title">Детали eSIM</span>
+  </div>
+  <div class="scroll-area" id="esimDetailContent"></div>
+</div>
+
+<!-- ===== REFERRAL PAGE ===== -->
+<div class="page" id="pageReferral">
+  <div class="page-header">
+    <button class="page-back" onclick="showPage('main')"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
+    <span class="page-title">Реферальная программа</span>
+  </div>
+  <div class="scroll-area" id="referralContent"></div>
+</div>
+
+<!-- ===== BUY MODAL ===== -->
 <div class="modal-overlay" id="planModal">
   <div class="modal-sheet">
     <div class="modal-handle"></div>
@@ -182,18 +240,12 @@ async function init() {
 }
 
 function renderCountries() {
-  const grid = document.getElementById('countryGrid');
   const list = document.getElementById('countryList');
-  grid.innerHTML = '';
   list.innerHTML = '';
-
   countries.forEach(c => {
     const cont = getContinent(c.code);
-    const html = `<div class="country-card" style="display:flex;align-items:center;gap:12px;text-align:left;padding:10px 12px;margin-bottom:6px" data-continent="${cont||'other'}" onclick="openPlans('${c.code}')"><span style="font-size:28px">${c.flag||'🌐'}</span><div style="flex:1"><div style="font-size:14px;font-weight:500">${c.name}</div></div><span style="color:rgba(255,255,255,0.25);font-size:18px">›</span></div>`;
-    list.innerHTML += html;
+    list.innerHTML += `<div class="country-card" style="display:flex;align-items:center;gap:12px;text-align:left;padding:10px 12px;margin-bottom:6px" data-continent="${cont||'other'}" onclick="openPlans('${c.code}')"><span style="font-size:28px">${c.flag||'🌐'}</span><div style="flex:1"><div style="font-size:14px;font-weight:500">${c.name}</div></div><span style="color:rgba(255,255,255,0.25);font-size:18px">›</span></div>`;
   });
-
-  applyFilter();
 }
 
 function setFilter(filter, btn) {
@@ -205,20 +257,7 @@ function setFilter(filter, btn) {
 
 function applyFilter() {
   const cards = document.querySelectorAll('#countryList .country-card');
-  const grid = document.getElementById('countryGrid');
   const search = (document.getElementById('searchInput').value || '').toLowerCase();
-
-  grid.innerHTML = '';
-  if(currentFilter === 'all' && !search) {
-    const shown = countries.filter(c => {
-      const cont = getContinent(c.code);
-      return !search || c.name.toLowerCase().includes(search) || c.code.toLowerCase().includes(search);
-    });
-    shown.slice(0,8).forEach(c => {
-      grid.innerHTML += `<div class="country-card" onclick="openPlans('${c.code}')"><span class="country-flag">${c.flag||'🌐'}</span><span class="country-name">${c.name}</span></div>`;
-    });
-  }
-
   for(let card of cards) {
     const cont = card.dataset.continent;
     const text = card.textContent.toLowerCase();
@@ -228,9 +267,7 @@ function applyFilter() {
   }
 }
 
-function filterCountries(q) {
-  applyFilter();
-}
+function filterCountries(q) { applyFilter(); }
 
 async function openPlans(code) {
   const modal = document.getElementById('planModal');
@@ -265,17 +302,10 @@ async function openPlans(code) {
 }
 
 async function buyPlan(countryCode, planId) {
-  if(!userInfo) { showToast('❌ Войдите через Telegram'); return; }
+  if(!userInfo) { showToast('Войдите через Telegram'); return; }
   const confirmMsg = 'Подтвердить покупку?';
-  if(inTelegram) {
-    tg.showConfirm(confirmMsg, async (ok) => {
-      if(!ok) return;
-      await doBuy(planId);
-    });
-  } else {
-    if(!confirm(confirmMsg)) return;
-    await doBuy(planId);
-  }
+  if(inTelegram) { tg.showConfirm(confirmMsg, async (ok) => { if(!ok) return; await doBuy(planId); }); }
+  else { if(!confirm(confirmMsg)) return; await doBuy(planId); }
 }
 
 async function doBuy(planId) {
@@ -283,8 +313,10 @@ async function doBuy(planId) {
     const initData = tg ? tg.initData : '';
     const res = await apiCall('/tma/buy', 'POST', {planId, initData});
     document.getElementById('planModal').classList.remove('open');
-    showToast('✅ eSIM куплена! ICCID: ' + (res.iccid||'в обработке'));
-  } catch(e) { showToast('❌ ' + (e.message||'Ошибка')); }
+    userEsims = res.esims || userEsims;
+    showToast('eSIM куплена! ICCID: ' + (res.iccid||'в обработке'));
+    document.getElementById('esimCount').textContent = userEsims.length + ' eSIM';
+  } catch(e) { showToast(e.message||'Ошибка'); }
 }
 
 function switchTab(tab) {
@@ -295,19 +327,98 @@ function switchTab(tab) {
   if(tg) tg.HapticFeedback.impactOccurred('light');
 }
 
-function goToMyEsims() {
-  if(!userEsims.length) { showToast('Нет eSIM'); return; }
-  const lines = userEsims.map(e => `${e.status==='active'?'🟢':'🔴'} ${e.iccid}`).join('\n\n');
-  if(inTelegram) tg.showAlert(lines);
-  else alert(lines);
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page' + name.charAt(0).toUpperCase() + name.slice(1)).classList.add('active');
+  if(name === 'esims') renderEsims();
+  if(name === 'referral') renderReferral();
 }
 
-function copyReferral() {
-  if(!userInfo) { showToast('Войдите через Telegram'); return; }
-  const link = userInfo.referral_link || 'https://t.me/q1esim_bot?start=' + (userInfo.referral_code||'');
-  if(inTelegram) tg.HapticFeedback.notificationOccurred('success');
-  if(navigator.clipboard) { navigator.clipboard.writeText(link).then(() => showToast('✅ Скопировано!')); }
-  else { showToast(link); }
+function renderEsims() {
+  const container = document.getElementById('esimList');
+  container.innerHTML = '';
+  if(!userEsims.length) {
+    container.innerHTML = '<div style="text-align:center;padding:40px;color:rgba(255,255,255,0.35)">У вас нет eSIM</div>';
+    return;
+  }
+  userEsims.forEach(e => {
+    const statusClass = e.status === 'active' ? 'esim-active' : (e.status === 'expired' ? 'esim-expired' : 'esim-inactive');
+    const statusText = e.status === 'active' ? 'Активна' : (e.status === 'expired' ? 'Истекла' : 'Неактивна');
+    container.innerHTML += `<div class="esim-card" onclick="showEsimDetail('${e.iccid}')">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="esim-dot ${statusClass}"></span>
+        <div>
+          <div style="font-size:14px;font-weight:500;font-family:monospace">${e.iccid}</div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:2px">${e.country||'—'} · ${e.plan||'—'} · ${statusText}</div>
+        </div>
+      </div>
+      <span style="color:rgba(255,255,255,0.25);font-size:18px">›</span>
+    </div>`;
+  });
+}
+
+function showEsimDetail(iccid) {
+  const e = userEsims.find(x => x.iccid === iccid);
+  if(!e) return;
+  const container = document.getElementById('esimDetailContent');
+  const statusClass = e.status === 'active' ? 'esim-active' : (e.status === 'expired' ? 'esim-expired' : 'esim-inactive');
+  const statusText = e.status === 'active' ? 'Активна' : (e.status === 'expired' ? 'Истекла' : 'Неактивна');
+
+  let qrHtml = '';
+  if(e.qr_code_data) {
+    qrHtml = `<img class="qr-img" src="data:image/png;base64,${e.qr_code_data}" alt="QR">`;
+  } else if(e.qr_code_url) {
+    qrHtml = `<img class="qr-img" src="${e.qr_code_url}" alt="QR">`;
+  }
+
+  container.innerHTML = `
+    <div class="glass-strong" style="padding:20px;text-align:center;margin-bottom:16px">
+      <div style="font-size:32px;margin-bottom:4px">📱</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.4)">ICCID</div>
+      <div style="font-size:14px;font-family:monospace;margin-top:2px">${e.iccid}</div>
+    </div>
+    <div class="glass" style="padding:16px;margin-bottom:16px">
+      <div class="stat-row"><span class="stat-label">Статус</span><span class="stat-value"><span class="esim-dot ${statusClass}" style="vertical-align:middle"></span>${statusText}</span></div>
+      <div class="stat-row"><span class="stat-label">Страна</span><span class="stat-value">${e.country||'—'}</span></div>
+      <div class="stat-row"><span class="stat-label">Тариф</span><span class="stat-value">${e.plan||'—'}</span></div>
+    </div>
+    ${qrHtml ? `<div class="glass" style="padding:16px;margin-bottom:16px"><div style="font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:8px">QR-код для активации</div>${qrHtml}</div>` : ''}
+    <button onclick="showPage('esims')" style="width:100%;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#fff;font-size:14px;cursor:pointer;margin-bottom:16px">← Назад к списку</button>
+  `;
+  showPage('esimdetail');
+}
+
+function renderReferral() {
+  const container = document.getElementById('referralContent');
+  if(!userInfo) {
+    container.innerHTML = '<div style="text-align:center;padding:40px;color:rgba(255,255,255,0.35)">Войдите через Telegram</div>';
+    return;
+  }
+  const link = userInfo.referral_link || 'https://t.me/q1esim_bot';
+  container.innerHTML = `
+    <div class="glass-strong" style="padding:20px;text-align:center;margin-bottom:16px">
+      <div style="font-size:32px;margin-bottom:4px">🎁</div>
+      <div style="font-size:17px;font-weight:600">Реферальная программа</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.4);margin-top:4px">Приглашайте друзей и получайте 30% с каждой покупки</div>
+    </div>
+    <div class="glass" style="padding:16px;margin-bottom:16px">
+      <div class="stat-row"><span class="stat-label">Ваш доход</span><span class="stat-value">$${userInfo.referral_earned||'0.00'}</span></div>
+      <div class="stat-row"><span class="stat-label">Комиссия</span><span class="stat-value">30%</span></div>
+    </div>
+    <div class="glass" style="padding:16px;margin-bottom:16px">
+      <div style="font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:8px">Ваша реферальная ссылка</div>
+      <div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:10px;font-size:12px;font-family:monospace;word-break:break-all;margin-bottom:10px;color:rgba(255,255,255,0.7)">${link}</div>
+      <button onclick="copyReferralLink('${link}')" style="width:100%;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:#fff;font-size:14px;cursor:pointer">📋 Скопировать ссылку</button>
+    </div>
+    <div style="font-size:12px;color:rgba(255,255,255,0.25);text-align:center;margin-bottom:16px">Деньги начисляются автоматически после покупки друга</div>
+  `;
+}
+
+function copyReferralLink(link) {
+  if(navigator.clipboard) {
+    navigator.clipboard.writeText(link).then(() => showToast('Скопировано!'));
+  } else { showToast(link); }
+  if(tg) tg.HapticFeedback.notificationOccurred('success');
 }
 
 function support() {

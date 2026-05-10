@@ -68,7 +68,7 @@ class Settings(BaseSettings):
     PLATEGA_FAIL_URL: str
 
     # Referral
-    REFERRAL_PERCENT: float = 5.0  # percent of purchase
+    REFERRAL_PERCENT: float = 30.0  # percent of purchase
 
     # Markup
     DEFAULT_MARKUP_PERCENT: float = 20.0
