@@ -4,7 +4,7 @@ from decimal import Decimal
 from aiogram import F, Router
 from aiogram.filters import Command, CommandStart
 from aiogram.fsm.context import FSMContext
-from aiogram.types import BufferedInputFile, CallbackQuery, KeyboardButton, Message, ReplyKeyboardMarkup
+from aiogram.types import BufferedInputFile, CallbackQuery, InputFile, KeyboardButton, Message, ReplyKeyboardMarkup
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.bot.keyboards.keyboards import (
@@ -47,26 +47,32 @@ def _read_logo() -> BufferedInputFile:
         return BufferedInputFile(f.read(), filename="q1es.png")
 
 
+async def _edit_message(cb: CallbackQuery, text: str, **kwargs) -> None:
+    if cb.message.photo:
+        await cb.message.edit_caption(caption=text, **kwargs)
+    else:
+        await _edit_message(cb, text, **kwargs)
+
+
 # ─── /start ───────────────────────────────────────────────────────────────────
 
 @router.message(CommandStart())
 async def cmd_start(message: Message, user: User, lang: str, state: FSMContext) -> None:
     await state.clear()
     is_admin = user.telegram_id in settings.ADMIN_IDS
-    reply_kb = ReplyKeyboardMarkup(
-        keyboard=[[KeyboardButton(text="📋 " + t("menu_main", lang))]],
-        resize_keyboard=True,
-        is_persistent=True,
-    )
     await message.answer_photo(
         _read_logo(),
         caption=t("welcome", lang),
         parse_mode="HTML",
-        reply_markup=reply_kb,
+        reply_markup=main_menu_kb(lang, is_admin=is_admin),
     )
     await message.answer(
-        t("choose_action", lang),
-        reply_markup=main_menu_kb(lang, is_admin=is_admin),
+        "·",
+        reply_markup=ReplyKeyboardMarkup(
+            keyboard=[[KeyboardButton(text="📋 " + t("menu_main", lang))]],
+            resize_keyboard=True,
+            is_persistent=True,
+        ),
     )
 
 
@@ -74,7 +80,8 @@ async def cmd_start(message: Message, user: User, lang: str, state: FSMContext) 
 async def cb_menu_start(cb: CallbackQuery, user: User, lang: str, state: FSMContext) -> None:
     await state.clear()
     is_admin = user.telegram_id in settings.ADMIN_IDS
-    await cb.message.edit_text(
+    await _edit_message(
+        cb,
         t("choose_action", lang),
         parse_mode="HTML",
         reply_markup=main_menu_kb(lang, is_admin=is_admin),
@@ -117,13 +124,13 @@ async def cb_buy(cb: CallbackQuery, session: AsyncSession, user: User, lang: str
     countries = await catalog.get_active_countries()
 
     if not countries:
-        await cb.message.edit_text(t("no_countries", lang), parse_mode="HTML")
+        await _edit_message(cb, t("no_countries", lang), parse_mode="HTML")
         return
 
     await state.set_state(BuyFlow.selecting_country)
     await state.update_data(countries_page=0)
 
-    await cb.message.edit_text(
+    await _edit_message(cb, 
         t("select_country", lang),
         parse_mode="HTML",
         reply_markup=countries_kb(countries, lang, page=0),
@@ -165,7 +172,7 @@ async def cb_country(cb: CallbackQuery, session: AsyncSession, user: User, lang:
     flag = country.flag_emoji or "🌐"
     name = country.name_ru if (lang == "ru" and country.name_ru) else country.name
 
-    await cb.message.edit_text(
+    await _edit_message(cb, 
         t("select_plan", lang, country=name, flag=flag),
         parse_mode="HTML",
         reply_markup=plans_kb(plans, lang),
@@ -218,7 +225,7 @@ async def cb_plan(cb: CallbackQuery, session: AsyncSession, user: User, lang: st
         days=plan.duration_days,
         amount=amount,
     )
-    await cb.message.edit_text(
+    await _edit_message(cb, 
         text,
         parse_mode="HTML",
         reply_markup=order_confirm_kb(order.id, amount, lang),
@@ -254,7 +261,7 @@ async def cb_pay(cb: CallbackQuery, session: AsyncSession, user: User, lang: str
             currency=order.currency,
             external_ref=order.external_ref,
         )
-        await cb.message.edit_text("⏳ Processing sandbox payment...")
+        await _edit_message(cb, "⏳ Processing sandbox payment...")
         await cb.answer()
 
         # Save payment
@@ -276,7 +283,7 @@ async def cb_pay(cb: CallbackQuery, session: AsyncSession, user: User, lang: str
         esim_service = EsimService(session, nova)
         try:
             esim = await esim_service.provision_esim(order)
-            await cb.message.edit_text(
+            await _edit_message(cb, 
                 t("esim_ready", lang, iccid=esim.iccid, activation_code=esim.activation_code or "N/A", lpa=esim.lpa or "N/A"),
                 parse_mode="HTML",
             )
@@ -288,7 +295,7 @@ async def cb_pay(cb: CallbackQuery, session: AsyncSession, user: User, lang: str
                 await cb.message.answer_photo(esim.qr_code_url, caption="📸 Scan to activate your eSIM")
         except Exception as exc:
             logger.error("sandbox_provision_failed", order_id=str(order.id), error=str(exc), exc_info=True)
-            await cb.message.edit_text("❌ Provisioning failed. Check logs.")
+            await _edit_message(cb, "❌ Provisioning failed. Check logs.")
         return
 
     # Production mode — real Platega
@@ -320,7 +327,7 @@ async def cb_pay(cb: CallbackQuery, session: AsyncSession, user: User, lang: str
 
     await state.set_state(BuyFlow.awaiting_payment)
 
-    await cb.message.edit_text(
+    await _edit_message(cb, 
         t("payment_created", lang),
         parse_mode="HTML",
         reply_markup=payment_kb(payment.payment_url, lang),
@@ -337,7 +344,7 @@ async def cb_my_esims(cb: CallbackQuery, session: AsyncSession, user: User, lang
     esims = await esim_service.get_user_esims(user.id)
 
     if not esims:
-        await cb.message.edit_text(
+        await _edit_message(cb, 
             t("my_esims_empty", lang),
             parse_mode="HTML",
             reply_markup=back_kb("menu:start", lang),
@@ -345,7 +352,7 @@ async def cb_my_esims(cb: CallbackQuery, session: AsyncSession, user: User, lang
         await cb.answer()
         return
 
-    await cb.message.edit_text(
+    await _edit_message(cb, 
         t("my_esims_header", lang, count=len(esims)),
         parse_mode="HTML",
         reply_markup=esim_list_kb(esims, lang),
@@ -382,7 +389,7 @@ async def cb_esim_detail(cb: CallbackQuery, session: AsyncSession, user: User, l
         total_mb=esim.data_total_mb or 0,
         expires_at=expires,
     )
-    await cb.message.edit_text(text, parse_mode="HTML", reply_markup=esim_detail_kb(iccid, lang))
+    await _edit_message(cb, text, parse_mode="HTML", reply_markup=esim_detail_kb(iccid, lang))
     await cb.answer()
 
 
@@ -467,7 +474,7 @@ async def cb_profile(cb: CallbackQuery, session: AsyncSession, user: User, lang:
         esim_count=len(esims),
         since=since,
     )
-    await cb.message.edit_text(text, parse_mode="HTML", reply_markup=back_kb("menu:start", lang))
+    await _edit_message(cb, text, parse_mode="HTML", reply_markup=back_kb("menu:start", lang))
     await cb.answer()
 
 
@@ -489,7 +496,7 @@ async def cb_referral(cb: CallbackQuery, session: AsyncSession, user: User, lang
         count=stats["referral_count"],
         earned=f"{stats['total_earned']:.2f}",
     )
-    await cb.message.edit_text(text, parse_mode="HTML", reply_markup=back_kb("menu:start", lang))
+    await _edit_message(cb, text, parse_mode="HTML", reply_markup=back_kb("menu:start", lang))
     await cb.answer()
 
 
@@ -497,7 +504,7 @@ async def cb_referral(cb: CallbackQuery, session: AsyncSession, user: User, lang
 
 @router.callback_query(F.data == "menu:language")
 async def cb_language(cb: CallbackQuery, user: User, lang: str) -> None:
-    await cb.message.edit_text(
+    await _edit_message(cb, 
         "🌐 Choose your language / Выберите язык:",
         reply_markup=language_kb(),
     )
@@ -514,7 +521,7 @@ async def cb_set_language(cb: CallbackQuery, session: AsyncSession, user: User) 
     await session.commit()
     await cb.answer("✅")
     is_admin = user.telegram_id in settings.ADMIN_IDS
-    await cb.message.edit_text(
+    await _edit_message(cb, 
         t("welcome", lang_code),
         parse_mode="HTML",
         reply_markup=main_menu_kb(lang_code, is_admin=is_admin),
@@ -526,7 +533,7 @@ async def cb_set_language(cb: CallbackQuery, session: AsyncSession, user: User) 
 @router.callback_query(F.data == "menu:support")
 async def cb_support(cb: CallbackQuery, user: User, lang: str, state: FSMContext) -> None:
     await state.set_state(SupportFlow.writing_message)
-    await cb.message.edit_text(
+    await _edit_message(cb, 
         t("support_message", lang),
         parse_mode="HTML",
         reply_markup=back_kb("menu:start", lang),

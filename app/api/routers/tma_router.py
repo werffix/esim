@@ -5,6 +5,8 @@ import uuid
 import urllib.parse
 from typing import Any
 
+from aiogram import Bot
+from aiogram.types import BufferedInputFile
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import HTMLResponse
 from sqlalchemy import func, select
@@ -237,7 +239,7 @@ async def tma_plans(body: dict):
 
 
 @router.post("/tma/buy")
-async def tma_buy(body: dict):
+async def tma_buy(body: dict, request: Request):
     init_data = body.get("initData", "")
     plan_id = body.get("planId", "")
 
@@ -259,6 +261,10 @@ async def tma_buy(body: dict):
         if not plan:
             raise HTTPException(404, "Тариф не найден")
 
+        from app.models.models import Country as CountryModel, Order as OrderModel
+        country_obj = await session.get(CountryModel, plan.country_id)
+        country_name = COUNTRY_NAMES_RU.get(country_obj.code, country_obj.name) if country_obj else ""
+
         order_service = OrderService(session)
         order = await order_service.create_order(user.id, plan.id)
 
@@ -268,8 +274,38 @@ async def tma_buy(body: dict):
 
         await session.commit()
 
-        return {
-            "order_id": str(order.id),
+        esim_data = {
             "iccid": esim.iccid if esim else None,
-            "status": "success",
+            "qr_code_data": esim.qr_code_data if esim else None,
+            "qr_code_url": esim.qr_code_url if esim else None,
+            "activation_code": esim.activation_code if esim else None,
+            "country": country_name,
+            "plan": plan.name or f"{plan.data_gb}GB/{plan.duration_days}d",
+            "status": "active" if esim and esim.status else "pending",
         }
+
+        # Send Telegram notification
+        try:
+            bot: Bot = request.app.state.bot
+            lang = user.language_code or "ru"
+            from app.core.i18n import t
+            import base64
+            text = t("esim_ready", lang,
+                     iccid=esim.iccid,
+                     activation_code=esim.activation_code or "N/A",
+                     lpa=esim.lpa or "N/A")
+            if esim and esim.qr_code_data:
+                await bot.send_photo(
+                    chat_id=telegram_id,
+                    photo=BufferedInputFile(base64.b64decode(esim.qr_code_data), "esim_qr.png"),
+                    caption=text,
+                    parse_mode="HTML",
+                )
+            elif esim and esim.qr_code_url:
+                await bot.send_photo(chat_id=telegram_id, photo=esim.qr_code_url, caption=text, parse_mode="HTML")
+            else:
+                await bot.send_message(chat_id=telegram_id, text=text, parse_mode="HTML")
+        except Exception as exc:
+            logger.error("tma_buy_notification_failed", telegram_id=telegram_id, error=str(exc), exc_info=True)
+
+        return {"order_id": str(order.id), "status": "success", "esim": esim_data}
